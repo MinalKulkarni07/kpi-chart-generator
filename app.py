@@ -9,6 +9,7 @@ import json
 from utils.data_processor import DataProcessor
 from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
+from utils.export_manager import ExportManager
 
 # Page configuration
 st.set_page_config(
@@ -229,6 +230,128 @@ def kpi_dashboard_page():
                 )
                 st.plotly_chart(fig, use_container_width=True)
         
+        # Custom KPI Formula Section
+        st.subheader("🧮 Custom KPI Formula")
+        
+        with st.expander("Create Custom KPI", expanded=False):
+            # Quick templates
+            st.write("**Quick KPI Templates:**")
+            templates = {
+                "Growth Rate %": "((sum(col2) - sum(col1)) / sum(col1)) * 100",
+                "Average Ratio": "mean(col1) / mean(col2)",
+                "Profit Margin %": "((sum(revenue) - sum(costs)) / sum(revenue)) * 100",
+                "Efficiency Ratio": "sum(output) / sum(input)",
+                "Conversion Rate %": "(sum(conversions) / sum(total)) * 100"
+            }
+            
+            template_cols = st.columns(len(templates))
+            for i, (name, formula) in enumerate(templates.items()):
+                with template_cols[i]:
+                    if st.button(f"📋 {name}", key=f"template_{i}"):
+                        st.session_state.template_formula = formula
+                        st.session_state.template_name = name
+            
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                st.write("**Build your custom KPI formula:**")
+                
+                # Show available functions
+                functions_info = kpi_calc.get_available_functions()
+                
+                st.write("**Available Functions:**")
+                st.write(f"• **Math:** {', '.join(functions_info['Mathematical'])}")
+                st.write(f"• **Operators:** {', '.join(functions_info['Operators'])}")
+                
+                # Column mapping
+                st.write("**Map your columns to simple names:**")
+                column_mapping = {}
+                available_cols = processed_info['numeric_columns'] + processed_info['text_columns']
+                
+                num_mappings = st.number_input("Number of columns to use:", min_value=1, max_value=5, value=2)
+                
+                for i in range(num_mappings):
+                    col_map1, col_map2 = st.columns(2)
+                    with col_map1:
+                        alias = st.text_input(f"Simple name {i+1}:", value=f"col{i+1}", key=f"alias_{i}")
+                    with col_map2:
+                        column = st.selectbox(f"Maps to column:", available_cols, key=f"column_{i}")
+                    
+                    if alias and column:
+                        column_mapping[alias] = column
+                
+                # Formula input
+                default_formula = "sum(col1) / sum(col2) * 100"
+                default_name = "Custom Ratio"
+                
+                # Use template if selected
+                if hasattr(st.session_state, 'template_formula'):
+                    default_formula = st.session_state.template_formula
+                    default_name = st.session_state.template_name
+                
+                formula = st.text_area(
+                    "Enter your formula:",
+                    value=default_formula,
+                    help="Use the simple names you defined above. Example: sum(sales) / count(sales)"
+                )
+                
+                kpi_name = st.text_input("KPI Name:", value=default_name)
+                
+                # Formula validation
+                if st.button("🔍 Validate Formula", key="validate_formula"):
+                    if formula and column_mapping:
+                        try:
+                            # Test the formula without executing it fully
+                            test_result = kpi_calc.calculate_custom_kpi(formula, column_mapping)
+                            if test_result.get('type') == 'error':
+                                st.error(f"❌ Formula Error: {test_result['error']}")
+                            else:
+                                st.success("✅ Formula is valid!")
+                                st.info(f"Expected result type: {test_result.get('type', 'unknown')}")
+                        except Exception as e:
+                            st.error(f"❌ Validation Error: {str(e)}")
+                    else:
+                        st.warning("⚠️ Please enter a formula and map columns first.")
+            
+            with col2:
+                st.write("**Formula Examples:**")
+                for example in functions_info['Examples']:
+                    st.code(example, language='python')
+            
+            if st.button("🚀 Calculate Custom KPI", type="primary"):
+                if formula and column_mapping:
+                    result = kpi_calc.calculate_custom_kpi(formula, column_mapping)
+                    
+                    if result.get('type') == 'error':
+                        st.error(f"❌ Formula Error: {result['error']}")
+                    else:
+                        st.success("✅ Custom KPI calculated successfully!")
+                        
+                        # Display result
+                        col1, col2, col3 = st.columns(3)
+                        
+                        with col1:
+                            st.metric(
+                                kpi_name,
+                                f"{result['value']:,.2f}",
+                                help=f"Formula: {formula}"
+                            )
+                        
+                        if result.get('type') == 'series':
+                            with col2:
+                                st.metric("Total", f"{result['sum']:,.2f}")
+                            with col3:
+                                st.metric("Count", f"{result['count']:,}")
+                        
+                        # Show formula breakdown
+                        st.write("**Formula Details:**")
+                        st.code(f"Formula: {formula}")
+                        st.write("**Column Mapping:**")
+                        for alias, col in column_mapping.items():
+                            st.write(f"• {alias} → {col}")
+                else:
+                    st.warning("⚠️ Please enter a formula and map at least one column.")
+        
         # Export KPIs
         st.subheader("💾 Export KPIs")
         
@@ -245,14 +368,55 @@ def kpi_dashboard_page():
         if grouping_column != "None":
             export_data["grouped_kpis"] = grouped_kpis.to_dict()
         
-        # Download button for KPI report
-        kpi_json = json.dumps(export_data, indent=2, default=str)
-        st.download_button(
-            label="📥 Download KPI Report (JSON)",
-            data=kpi_json,
-            file_name=f"kpi_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json"
-        )
+        # Initialize export manager
+        export_manager = ExportManager()
+        
+        # Create download columns
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            # JSON Export
+            kpi_json = json.dumps(export_data, indent=2, default=str)
+            st.download_button(
+                label="📄 Download JSON",
+                data=kpi_json,
+                file_name=f"kpi_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json"
+            )
+        
+        with col2:
+            # Excel Export
+            try:
+                excel_data = export_manager.create_kpi_excel(
+                    kpis, 
+                    grouped_kpis if grouping_column != "None" else None, 
+                    export_data
+                )
+                st.download_button(
+                    label="📊 Download Excel",
+                    data=excel_data,
+                    file_name=f"kpi_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+            except Exception as e:
+                st.error(f"Excel export error: {str(e)}")
+        
+        with col3:
+            # PDF Export
+            try:
+                pdf_data = export_manager.create_kpi_pdf(
+                    kpis, 
+                    grouped_kpis if grouping_column != "None" else None, 
+                    export_data
+                )
+                st.download_button(
+                    label="📋 Download PDF",
+                    data=pdf_data,
+                    file_name=f"kpi_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                    mime="application/pdf"
+                )
+            except Exception as e:
+                st.error(f"PDF export error: {str(e)}")
 
 def chart_generator_page():
     if st.session_state.data is None:
@@ -269,27 +433,82 @@ def chart_generator_page():
     
     # Chart configuration
     with st.expander("⚙️ Chart Configuration", expanded=True):
-        col1, col2, col3 = st.columns(3)
+        # Chart type selection with Top N option
+        chart_mode = st.radio(
+            "Chart Mode:",
+            ["📊 Standard Charts", "🏆 Top N Analysis"],
+            horizontal=True
+        )
         
-        with col1:
-            chart_type = st.selectbox(
-                "Chart Type:",
-                ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap"]
-            )
+        if chart_mode == "📊 Standard Charts":
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                chart_type = st.selectbox(
+                    "Chart Type:",
+                    ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap"]
+                )
         
-        with col2:
-            x_column = st.selectbox(
-                "X-axis:",
-                list(data.columns),
-                help="Select column for X-axis"
-            )
+        else:  # Top N Analysis
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                chart_type = "Top N Chart"
+                top_n_chart_type = st.selectbox(
+                    "Top N Chart Type:",
+                    ["bar", "horizontal_bar", "pie"],
+                    format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x]
+                )
+            
+            with col2:
+                n_value = st.number_input(
+                    "Number of Top Items:",
+                    min_value=3,
+                    max_value=50,
+                    value=10,
+                    help="Select how many top items to show (e.g., Top 5 customers)"
+                )
         
-        with col3:
-            y_column = st.selectbox(
-                "Y-axis:",
-                processed_info['numeric_columns'] if chart_type not in ["Pie Chart", "Histogram"] else list(data.columns),
-                help="Select column for Y-axis"
-            )
+        # Column selection based on chart mode
+        if chart_mode == "📊 Standard Charts":
+            with col2:
+                x_column = st.selectbox(
+                    "X-axis:",
+                    list(data.columns),
+                    help="Select column for X-axis"
+                )
+            
+            with col3:
+                y_column = st.selectbox(
+                    "Y-axis:",
+                    processed_info['numeric_columns'] if chart_type not in ["Pie Chart", "Histogram"] else list(data.columns),
+                    help="Select column for Y-axis"
+                )
+        
+        else:  # Top N Analysis
+            with col3:
+                st.write("**Top N Configuration:**")
+            
+            # For Top N charts, we need category and value columns
+            st.write("**Select columns for Top N analysis:**")
+            col_a, col_b = st.columns(2)
+            
+            with col_a:
+                x_column = st.selectbox(
+                    "Category Column:",
+                    processed_info['text_columns'] + processed_info['numeric_columns'],
+                    help="Select column to group by (e.g., Customer, Product, Region)"
+                )
+            
+            with col_b:
+                y_column = st.selectbox(
+                    "Value Column:",
+                    processed_info['numeric_columns'],
+                    help="Select column to rank by (e.g., Sales, Revenue, Quantity)"
+                )
+            
+            # Quick examples for Top N
+            st.info("💡 **Examples:** Top 5 Customers by Sales | Top 10 Products by Revenue | Top 3 Regions by Orders")
     
     # Additional options based on chart type
     color_column = None
@@ -355,7 +574,9 @@ def chart_generator_page():
         try:
             fig = None
             
-            if chart_type == "Bar Chart":
+            if chart_type == "Top N Chart":
+                fig = chart_gen.create_top_n_chart(x_column, y_column, n_value, top_n_chart_type, data)
+            elif chart_type == "Bar Chart":
                 fig = chart_gen.create_bar_chart(x_column, y_column, color_column, data)
             elif chart_type == "Line Chart":
                 fig = chart_gen.create_line_chart(x_column, y_column, color_column, data)
@@ -370,12 +591,17 @@ def chart_generator_page():
             elif chart_type == "Heatmap":
                 fig = chart_gen.create_heatmap(data)
             
-            if fig is not None:
+            if fig:
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # Export chart
                 st.subheader("💾 Export Chart")
-                col1, col2 = st.columns(2)
+                
+                # Initialize export manager
+                export_manager = ExportManager()
+                
+                # Create download columns
+                col1, col2, col3, col4 = st.columns(4)
                 
                 with col1:
                     # Export as HTML
@@ -384,7 +610,7 @@ def chart_generator_page():
                     html_data = html_buffer.getvalue()
                     
                     st.download_button(
-                        label="📥 Download as HTML",
+                        label="🌐 HTML",
                         data=html_data,
                         file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                         mime="text/html"
@@ -394,11 +620,39 @@ def chart_generator_page():
                     # Export as JSON
                     json_data = fig.to_json()
                     st.download_button(
-                        label="📥 Download as JSON",
+                        label="📄 JSON",
                         data=json_data,
                         file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                         mime="application/json"
                     )
+                
+                with col3:
+                    # Export as PDF
+                    try:
+                        chart_title = f"{chart_type} Report"
+                        pdf_data = export_manager.create_chart_pdf(fig, chart_title)
+                        st.download_button(
+                            label="📋 PDF",
+                            data=pdf_data,
+                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            mime="application/pdf"
+                        )
+                    except Exception as e:
+                        st.error(f"PDF export error: {str(e)}")
+                
+                with col4:
+                    # Export as Excel (with chart data)
+                    try:
+                        chart_title = f"{chart_type} Data"
+                        excel_data = export_manager.create_chart_excel(fig, data, chart_title)
+                        st.download_button(
+                            label="📊 Excel",
+                            data=excel_data,
+                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                    except Exception as e:
+                        st.error(f"Excel export error: {str(e)}")
         
         except Exception as e:
             st.error(f"❌ Error generating chart: {str(e)}")
@@ -407,6 +661,24 @@ def chart_generator_page():
     if st.checkbox("📚 Generate Chart Gallery"):
         st.subheader("📚 Chart Gallery")
         
+        # Top N Charts Gallery
+        st.write("**🏆 Top N Analysis Gallery:**")
+        text_cols = processed_info['text_columns'][:2]  # Limit to first 2 text columns
+        numeric_cols = processed_info['numeric_columns'][:2]  # Limit to first 2 numeric columns
+        
+        if text_cols and numeric_cols:
+            gallery_cols = st.columns(2)
+            
+            for i, (text_col, num_col) in enumerate(zip(text_cols, numeric_cols)):
+                with gallery_cols[i]:
+                    try:
+                        fig_top = chart_gen.create_top_n_chart(text_col, num_col, 5, "bar", data)
+                        st.plotly_chart(fig_top, use_container_width=True, key=f"top_{i}")
+                    except:
+                        st.info(f"Top 5 chart not available for {text_col} vs {num_col}")
+        
+        # Standard Charts Gallery
+        st.write("**📊 Standard Charts Gallery:**")
         numeric_cols = processed_info['numeric_columns'][:3]  # Limit to first 3 numeric columns
         
         for i, col in enumerate(numeric_cols):
@@ -416,8 +688,10 @@ def chart_generator_page():
             with col1:
                 # Bar chart
                 try:
-                    fig_bar = chart_gen.create_bar_chart(x_column, col, None, data)
-                    st.plotly_chart(fig_bar, use_container_width=True, key=f"bar_{i}")
+                    if len(list(data.columns)) > 0:
+                        first_col = list(data.columns)[0]
+                        fig_bar = chart_gen.create_bar_chart(first_col, col, None, data)
+                        st.plotly_chart(fig_bar, use_container_width=True, key=f"bar_{i}")
                 except:
                     st.info("Bar chart not available for this data combination")
             
@@ -464,11 +738,40 @@ def settings_page():
     # Export settings
     st.subheader("💾 Export Settings")
     
-    export_format = st.selectbox(
-        "Default export format:",
-        ["JSON", "CSV", "HTML"],
-        help="Default format for exporting data and charts"
-    )
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        kpi_export_format = st.selectbox(
+            "Default KPI export format:",
+            ["Excel", "PDF", "JSON"],
+            help="Preferred format for KPI reports"
+        )
+        
+        chart_export_format = st.selectbox(
+            "Default chart export format:",
+            ["PDF", "Excel", "HTML", "JSON"],
+            help="Preferred format for chart exports"
+        )
+    
+    with col2:
+        pdf_quality = st.selectbox(
+            "PDF image quality:",
+            ["High", "Medium", "Low"],
+            index=1,
+            help="Higher quality creates larger files"
+        )
+        
+        include_metadata = st.checkbox(
+            "Include metadata in exports",
+            value=True,
+            help="Add generation date and settings info"
+        )
+    
+    # Store preferences in session state
+    st.session_state.kpi_export_format = kpi_export_format
+    st.session_state.chart_export_format = chart_export_format
+    st.session_state.pdf_quality = pdf_quality
+    st.session_state.include_metadata = include_metadata
     
     # About section
     st.subheader("ℹ️ About")
