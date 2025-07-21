@@ -370,7 +370,7 @@ def chart_generator_page():
             elif chart_type == "Heatmap":
                 fig = chart_gen.create_heatmap(data)
             
-            if fig:
+            if fig is not None:
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # Export chart
