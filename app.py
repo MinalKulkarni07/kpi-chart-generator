@@ -19,26 +19,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ----------------------
-# Welcome Gesture and File Upload Warning
-# ----------------------
-st.markdown("""
-<style>
-    .welcome {
-        font-size: 24px;
-        font-weight: bold;
-        color: white;
-    }
-    .warning {
-        background-color: black;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
-</style>
-<div class="welcome">👋 Welcome to the KPI & Chart Generator App!</div>""")
 
-st.info("⚠️ This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
+st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
 
 # Initialize session state
 if 'data' not in st.session_state:
