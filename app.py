@@ -37,8 +37,8 @@ st.markdown("""
     }
 </style>
 <div class="welcome">👋 Welcome to the KPI & Chart Generator App!</div>
-<div class="warning">⚠️ Note: This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.</div>
-""", unsafe_allow_html=True)
+
+st.info("⚠️ This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
 
 # Initialize session state
 if 'data' not in st.session_state:
