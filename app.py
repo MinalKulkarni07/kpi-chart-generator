@@ -40,15 +40,6 @@ st.markdown("""
 <div class="warning">⚠️ Note: This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.</div>
 """, unsafe_allow_html=True)
 
-# ----------------------
-# Sidebar Toggle Button
-# ----------------------
-with st.sidebar:
-    with st.expander("🔧 App Settings", expanded=False):
-        chart_limit = st.slider("Chart Gallery Limit", 1, 10, 4)
-        default_export = st.selectbox("Default Chart Export Format", ["HTML", "JSON"])
-        show_help = st.checkbox("Show In-App Help", value=True)
-        
 # Initialize session state
 if 'data' not in st.session_state:
     st.session_state.data = None
@@ -56,9 +47,7 @@ if 'processed_data' not in st.session_state:
     st.session_state.processed_data = None
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []
-if 'chart_limit' not in st.session_state:
-    st.session_state.chart_limit = chart_limit
-    
+
 def main():
     st.title("📊 KPI & Chart Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
@@ -67,7 +56,7 @@ def main():
     with st.sidebar:
         st.header("Navigation")
         page = st.radio(
-            "Go to Section:",
+            "Select Page",
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
     
@@ -657,8 +646,37 @@ def chart_generator_page():
                         file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                         mime="application/json"
                     )
-                  except Exception as e:
-                      st.error(f"❌ Error generating chart: {str(e)}") 
+                
+                with col3:
+                    # Export as PDF
+                    try:
+                        chart_title = f"{chart_type} Report"
+                        pdf_data = export_manager.create_chart_pdf(fig, chart_title)
+                        st.download_button(
+                            label="📋 PDF",
+                            data=pdf_data,
+                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                            mime="application/pdf"
+                        )
+                    except Exception as e:
+                        st.error(f"PDF export error: {str(e)}")
+                
+                with col4:
+                    # Export as Excel (with chart data)
+                    try:
+                        chart_title = f"{chart_type} Data"
+                        excel_data = export_manager.create_chart_excel(fig, data, chart_title)
+                        st.download_button(
+                            label="📊 Excel",
+                            data=excel_data,
+                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                    except Exception as e:
+                        st.error(f"Excel export error: {str(e)}")
+        
+        except Exception as e:
+            st.error(f"❌ Error generating chart: {str(e)}")
     
     # Chart gallery - show multiple charts
     if st.checkbox("📚 Generate Chart Gallery"):
