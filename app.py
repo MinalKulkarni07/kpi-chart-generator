@@ -657,7 +657,9 @@ def chart_generator_page():
                         file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                         mime="application/json"
                     )
-                           
+                  except Exception as e:
+            st.error(f"❌ Error generating chart: {str(e)}") 
+    
     # Chart gallery - show multiple charts
     if st.checkbox("📚 Generate Chart Gallery"):
         st.subheader("📚 Chart Gallery")
