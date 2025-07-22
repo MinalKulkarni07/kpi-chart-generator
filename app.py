@@ -658,7 +658,7 @@ def chart_generator_page():
                         mime="application/json"
                     )
                   except Exception as e:
-            st.error(f"❌ Error generating chart: {str(e)}") 
+                      st.error(f"❌ Error generating chart: {str(e)}") 
     
     # Chart gallery - show multiple charts
     if st.checkbox("📚 Generate Chart Gallery"):
