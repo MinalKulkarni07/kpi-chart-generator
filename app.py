@@ -622,7 +622,7 @@ def chart_generator_page():
                 export_manager = ExportManager()
                 
                 # Create download columns
-                col1, col2, col3, col4 = st.columns(4)
+                col1, col2 = st.columns(2)
                 
                 with col1:
                     # Export as HTML
@@ -646,34 +646,6 @@ def chart_generator_page():
                         file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                         mime="application/json"
                     )
-                
-                with col3:
-                    # Export as PDF
-                    try:
-                        chart_title = f"{chart_type} Report"
-                        pdf_data = export_manager.create_chart_pdf(fig, chart_title)
-                        st.download_button(
-                            label="📋 PDF",
-                            data=pdf_data,
-                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                            mime="application/pdf"
-                        )
-                    except Exception as e:
-                        st.error(f"PDF export error: {str(e)}")
-                
-                with col4:
-                    # Export as Excel (with chart data)
-                    try:
-                        chart_title = f"{chart_type} Data"
-                        excel_data = export_manager.create_chart_excel(fig, data, chart_title)
-                        st.download_button(
-                            label="📊 Excel",
-                            data=excel_data,
-                            file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
-                    except Exception as e:
-                        st.error(f"Excel export error: {str(e)}")
         
         except Exception as e:
             st.error(f"❌ Error generating chart: {str(e)}")
