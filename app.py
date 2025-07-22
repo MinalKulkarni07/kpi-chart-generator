@@ -1,109 +1,97 @@
-# app.py
 import streamlit as st
 import pandas as pd
-from utils.kpi_calculator import KPICalculator
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+from datetime import datetime, timedelta
+import io
+import json
 from utils.data_processor import DataProcessor
+from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
-import datetime
 
-# ------------------------- App Settings -------------------------
+# ----------------------
+# App Configuration
+# ----------------------
 st.set_page_config(
     page_title="KPI & Chart Generator",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ------------------------- Welcome Gesture -------------------------
+# ----------------------
+# Welcome Gesture and File Upload Warning
+# ----------------------
 st.markdown("""
-    <div style='text-align: center; padding: 1rem;'>
-        <h2 style='color: #1f77b4;'>📊 Welcome to the KPI & Chart Generator App!</h2>
-        <p style='font-size: 16px;'>Upload your CSV file and generate insights instantly. No files are saved.</p>
-    </div>
+<style>
+    .welcome {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .warning {
+        background-color: #fff3cd;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+<div class="welcome">👋 Welcome to the KPI & Chart Generator App!</div>
+<div class="warning">⚠️ Note: This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.</div>
 """, unsafe_allow_html=True)
 
-# ------------------------- File Upload -------------------------
-st.sidebar.header("Upload Data")
-uploaded_file = st.sidebar.file_uploader("Upload CSV File", type=["csv"])
+# ----------------------
+# Sidebar Toggle Button
+# ----------------------
+with st.sidebar:
+    with st.expander("🔧 App Settings", expanded=False):
+        theme = st.radio("Theme Mode", ["Light", "Dark"], index=0)
+        chart_limit = st.slider("Chart Gallery Limit", 1, 10, 4)
+        default_export = st.selectbox("Default Chart Export Format", ["HTML", "JSON"])
+        show_help = st.checkbox("Show In-App Help", value=True)
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.success("✅ File uploaded successfully!")
-    
-    # ------------------------- Data Processor -------------------------
-    processor = DataProcessor(df)
-    analysis = processor.analyze_data()
+# ----------------------
+# Session State Init
+# ----------------------
+if 'data' not in st.session_state:
+    st.session_state.data = None
+if 'processed_data' not in st.session_state:
+    st.session_state.processed_data = None
+if 'selected_columns' not in st.session_state:
+    st.session_state.selected_columns = []
+if 'chart_limit' not in st.session_state:
+    st.session_state.chart_limit = chart_limit
 
-    # ------------------------- KPI Calculator -------------------------
-    calculator = KPICalculator(df)
-    numeric_columns = analysis['numeric_columns']
-    
-    st.header("📈 KPI Summary")
-    kpi_cols = st.multiselect("Select numeric columns to analyze KPIs:", options=numeric_columns)
-    if kpi_cols:
-        kpis = calculator.calculate_basic_kpis(kpi_cols)
-        st.write(pd.DataFrame(kpis).T)
+# ----------------------
+# App Navigation
+# ----------------------
+def main():
+    st.title("📊 KPI & Chart Generator")
 
-    # ------------------------- Chart Generator -------------------------
-    st.header("📊 Chart Generator")
-    generator = ChartGenerator(df)
-    
-    x_col = st.selectbox("Select X-axis column:", options=df.columns)
-    y_col = st.selectbox("Select Y-axis column:", options=numeric_columns)
-    chart_type = st.selectbox("Select chart type:", ["Bar", "Line", "Scatter", "Pie", "Box", "Histogram"])
+    # Navigation Panel
+    with st.sidebar:
+        st.header("📁 Navigation")
+        page = st.radio(
+            "Go to Section:",
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
+        )
 
-    if st.button("Generate Chart"):
-        try:
-            if chart_type == "Bar":
-                fig = generator.create_bar_chart(x_col, y_col)
-            elif chart_type == "Line":
-                fig = generator.create_line_chart(x_col, y_col)
-            elif chart_type == "Scatter":
-                fig = generator.create_scatter_plot(x_col, y_col)
-            elif chart_type == "Pie":
-                fig = generator.create_pie_chart(x_col, y_col)
-            elif chart_type == "Box":
-                fig = generator.create_box_plot(x_col, y_col)
-            elif chart_type == "Histogram":
-                fig = generator.create_histogram(y_col)
+    if page == "📁 Data Upload":
+        data_upload_page()
+    elif page == "📈 KPI Dashboard":
+        kpi_dashboard_page()
+    elif page == "📊 Chart Generator":
+        chart_generator_page()
+    elif page == "⚙️ Settings":
+        settings_page()
 
-            st.plotly_chart(fig, use_container_width=True)
+# Import and run the remaining pages as before
+from pages.data_upload import data_upload_page
+from pages.kpi_dashboard import kpi_dashboard_page
+from pages.chart_generator import chart_generator_page
+from pages.settings import settings_page
 
-        except Exception as e:
-            st.error(f"Error generating chart: {e}")
-
-    # ------------------------- Chart Gallery -------------------------
-    st.header("🖼️ Chart Gallery (Max 4)")
-    gallery_x = st.selectbox("Gallery X-axis:", df.columns, key='gallery_x')
-    gallery_y = st.multiselect("Gallery Y-axis (up to 4):", numeric_columns, max_selections=4)
-
-    if gallery_x and gallery_y:
-        for col in gallery_y[:4]:
-            try:
-                chart = generator.create_line_chart(gallery_x, col)
-                st.plotly_chart(chart, use_container_width=True)
-            except Exception as e:
-                st.warning(f"Could not generate chart for {col}: {e}")
-
-    # ------------------------- Export Manager -------------------------
-    st.header("📤 Export KPIs")
-    export_manager = ExportManager()
-
-    if st.button("Download KPI Report (Excel)"):
-        kpi_data = calculator.calculate_basic_kpis(kpi_cols)
-        excel_bytes = export_manager.create_kpi_excel(kpi_data)
-        st.download_button("Download Excel", excel_bytes, file_name="kpi_report.xlsx")
-
-    if st.button("Download KPI Report (PDF)"):
-        kpi_data = calculator.calculate_basic_kpis(kpi_cols)
-        pdf_bytes = export_manager.create_kpi_pdf(kpi_data)
-        st.download_button("Download PDF", pdf_bytes, file_name="kpi_report.pdf")
-
-else:
-    st.warning("Please upload a CSV file to begin.")
-
-# ------------------------- Warning Note -------------------------
-st.sidebar.markdown("""
----
-⚠️ **Note:** This app does not save your uploaded files. If your network is interrupted or the page refreshes, you'll need to re-upload your file.
-""")
+if __name__ == "__main__":
+    main()
