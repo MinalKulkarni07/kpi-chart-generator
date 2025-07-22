@@ -91,7 +91,8 @@ def main():
 from pages.data_upload import data_upload_page
 from pages.kpi_dashboard import kpi_dashboard_page
 from pages.chart_generator import chart_generator_page
-from pages.settings import settings_page
+from pages.settings_page import settings_page
+
 
 if __name__ == "__main__":
     main()
