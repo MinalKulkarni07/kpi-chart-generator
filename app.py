@@ -36,7 +36,7 @@ st.markdown("""
         margin-top: 10px;
     }
 </style>
-<div class="welcome">👋 Welcome to the KPI & Chart Generator App!</div>
+<div class="welcome">👋 Welcome to the KPI & Chart Generator App!</div>"""
 
 st.info("⚠️ This app does <u>not</u> save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
 
