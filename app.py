@@ -30,7 +30,7 @@ st.markdown("""
         color: #2c3e50;
     }
     .warning {
-        background-color: #fff3cd;
+        background-color: black;
         padding: 10px;
         border-radius: 5px;
         margin-top: 10px;
