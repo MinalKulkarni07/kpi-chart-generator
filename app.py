@@ -27,7 +27,7 @@ st.markdown("""
     .welcome {
         font-size: 24px;
         font-weight: bold;
-        color: #2c3e50;
+        color: white;
     }
     .warning {
         background-color: black;
