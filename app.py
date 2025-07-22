@@ -742,7 +742,7 @@ def settings_page():
         
         chart_export_format = st.selectbox(
             "Default chart export format:",
-            ["PDF", "Excel", "HTML", "JSON"],
+            ["HTML", "JSON"],
             help="Preferred format for chart exports"
         )
     
