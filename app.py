@@ -55,6 +55,13 @@ def main():
     elif page == "⚙️ Settings":
         settings_page()
     
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
+
 
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
@@ -70,22 +77,15 @@ def data_upload_page():
         try:
             # Read CSV file
             data = pd.read_csv(uploaded_file)
-
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
-
-for col in data.columns:
-    if data[col].dtype == 'object' and data[col].notna().any():
-        sample_value = data[col].dropna().iloc[0]
-        if looks_like_date(sample_value):
-            try:
-                data[col] = pd.to_datetime(data[col], errors='coerce')
-            except:
-                pass
+            
+            for col in data.columns:
+                if data[col].dtype == 'object' and data[col].notna().any():
+                    sample_value = data[col].dropna().iloc[0]
+                    if looks_like_date(sample_value):
+                        try:
+                            data[col] = pd.to_datetime(data[col], errors='coerce')
+                        except:
+                            pass
             
             st.session_state.data = data
             
