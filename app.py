@@ -37,7 +37,7 @@ def main():
         st.header("Navigation")
         page = st.radio(
             "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", st.button("🔄 Reset Application")]
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
     
     if page == "📁 Data Upload":
