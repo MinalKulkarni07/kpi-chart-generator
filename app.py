@@ -69,6 +69,14 @@ def data_upload_page():
         try:
             # Read CSV file
             data = pd.read_csv(uploaded_file)
+
+            # Try to parse columns as datetime where possible
+            for col in data.columns:
+                try:
+                    parsed_col = pd.to_datetime(data[col], errors='raise')
+                    data[col] = parsed_col
+                except:
+                    pass
             st.session_state.data = data
             
             # Initialize data processor
@@ -103,23 +111,18 @@ def data_upload_page():
                 for col in processed_info['numeric_columns']:
                     stats = data[col].describe()
                     st.write(f"• **{col}**: {stats['count']} values, Mean: {stats['mean']:.2f}")
-            
+                    
+                if processed_info['date_columns']:
+                    st.write("**Date Columns:**")
+                    for col in processed_info['date_columns']:
+                        min_date = data[col].min()
+                        max_date = data[col].max()
+                        st.write(f"• **{col}**: From {min_date.date()} to {max_date.date()}")   
             with col2:
                 st.write("**Text/Categorical Columns:**")
                 for col in processed_info['text_columns']:
                     unique_count = data[col].nunique()
                     st.write(f"• **{col}**: {unique_count} unique values")
-            
-            # Date columns if any
-            with col1:
-                st.write("**Date Columns:**")
-                for col in data.columns:
-                    try:
-                        parsed_col = pd.to_datetime(data[col], errors='raise')
-                        data[col] = parsed_col
-                    except:
-                        pass
-                        st.write(f"• **{col}**: Date range detected")
             
             # Data quality check
             st.subheader("🔍 Data Quality")
