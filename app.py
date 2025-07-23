@@ -35,16 +35,16 @@ def main():
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
-        st.button("🔄 Reset Application")
-        page = st.radio(
-            "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
-        )
-    if st.button("🔄 Reset Application"):
+        if st.button("🔄 Reset Application"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
             st.success("✅ Application reset successfully!")
             st.rerun()
+        page = st.radio(
+            "Select Page",
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
+        )
+    
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
