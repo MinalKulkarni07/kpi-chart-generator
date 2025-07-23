@@ -35,6 +35,7 @@ def main():
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
+        st.button("🔄 Reset Application")
         page = st.radio(
             "Select Page",
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
@@ -48,7 +49,11 @@ def main():
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-    
+    elif st.button("🔄 Reset Application"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+            st.success("✅ Application reset successfully!")
+            st.rerun()
 
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
@@ -129,12 +134,7 @@ def data_upload_page():
         st.info("👆 Please upload a CSV file to get started.")
 
 st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
-if st.button("🔄 Reset Application"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-            st.success("✅ Application reset successfully!")
-            st.rerun()
-            
+          
 def kpi_dashboard_page():
     if st.session_state.data is None:
         st.warning("⚠️ Please upload a CSV file first.")
