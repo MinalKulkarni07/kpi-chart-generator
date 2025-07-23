@@ -4,6 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
+from dateutil.parser import parse
 import io
 import json
 from utils.data_processor import DataProcessor
@@ -70,13 +71,22 @@ def data_upload_page():
             # Read CSV file
             data = pd.read_csv(uploaded_file)
 
-            # Try to parse columns as datetime where possible
-            for col in data.columns:
-                try:
-                    parsed_col = pd.to_datetime(data[col], errors='raise')
-                    data[col] = parsed_col
-                except:
-                    pass
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
+
+for col in data.columns:
+    if data[col].dtype == 'object' and data[col].notna().any():
+        sample_value = data[col].dropna().iloc[0]
+        if looks_like_date(sample_value):
+            try:
+                data[col] = pd.to_datetime(data[col], errors='coerce')
+            except:
+                pass
+            
             st.session_state.data = data
             
             # Initialize data processor
