@@ -111,7 +111,7 @@ def data_upload_page():
                     st.write(f"• **{col}**: {unique_count} unique values")
             
             # Date columns if any
-            if processed_info['date_columns']:
+            with col1:
                 st.write("**Date Columns:**")
                 for col in processed_info['date_columns']:
                     st.write(f"• **{col}**: Date range detected")
