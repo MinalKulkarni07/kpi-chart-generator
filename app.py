@@ -114,8 +114,13 @@ def data_upload_page():
             with col1:
                 if processed_info['date_columns']:
                     st.write("**Date Columns:**")
-                    for col in processed_info['date_columns']:
-                        st.write(f"• **{col}**: Date range detected")
+                    for col in data.columns:
+                        try:
+                            parsed_col = pd.to_datetime(data[col], errors='raise')
+                            data[col] = parsed_col
+                        except:
+                            pass
+                            st.write(f"• **{col}**: Date range detected")
             
             # Data quality check
             st.subheader("🔍 Data Quality")
