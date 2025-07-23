@@ -31,7 +31,7 @@ if 'selected_columns' not in st.session_state:
 def main():
     st.title("📊 KPI & Chart Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-    
+    st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
@@ -132,8 +132,6 @@ def data_upload_page():
     
     else:
         st.info("👆 Please upload a CSV file to get started.")
-
-st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
           
 def kpi_dashboard_page():
     if st.session_state.data is None:
