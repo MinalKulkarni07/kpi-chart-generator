@@ -55,14 +55,6 @@ def main():
     elif page == "⚙️ Settings":
         settings_page()
     
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
-
-
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
@@ -72,6 +64,13 @@ def data_upload_page():
         type=['csv'],
         help="Upload your CSV file to begin analysis. The file should contain structured data with column headers."
     )
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
+
     
     if uploaded_file is not None:
         try:
