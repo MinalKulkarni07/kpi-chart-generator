@@ -20,8 +20,6 @@ st.set_page_config(
 )
 
 
-st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
-
 # Initialize session state
 if 'data' not in st.session_state:
     st.session_state.data = None
@@ -128,6 +126,8 @@ def data_upload_page():
     
     else:
         st.info("👆 Please upload a CSV file to get started.")
+
+st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
 
 def kpi_dashboard_page():
     if st.session_state.data is None:
