@@ -61,14 +61,16 @@ def looks_like_date(val):
         return True
     except:
         return False          
-            for col in data.columns:
-                if data[col].dtype == 'object' and data[col].notna().any():
-                    sample_value = data[col].dropna().iloc[0]
-                    if looks_like_date(sample_value):
-                        try:
-                            data[col] = pd.to_datetime(data[col], errors='coerce')
-                        except:
-                            pass    
+            
+        for col in data.columns:
+            if data[col].dtype == 'object' and data[col].notna().any():
+                sample_value = data[col].dropna().iloc[0]
+                if looks_like_date(sample_value):
+                    try:
+                        data[col] = pd.to_datetime(data[col], errors='coerce')
+                    except:
+                        pass 
+                        
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
