@@ -40,7 +40,11 @@ def main():
             "Select Page",
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
-    
+    if st.button("🔄 Reset Application"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+            st.success("✅ Application reset successfully!")
+            st.rerun()
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -49,11 +53,7 @@ def main():
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-    elif st.button("🔄 Reset Application"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-            st.success("✅ Application reset successfully!")
-            st.rerun()
+    
 
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
