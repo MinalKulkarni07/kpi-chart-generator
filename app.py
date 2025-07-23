@@ -772,11 +772,6 @@ def settings_page():
     - **NumPy** for numerical computations
     """)
     
-    if st.button("🔄 Reset Application"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.success("✅ Application reset successfully!")
-        st.rerun()
 
 if __name__ == "__main__":
     main()
