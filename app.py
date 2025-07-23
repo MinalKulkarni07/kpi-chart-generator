@@ -112,9 +112,10 @@ def data_upload_page():
             
             # Date columns if any
             with col1:
-                st.write("**Date Columns:**")
-                for col in processed_info['date_columns']:
-                    st.write(f"• **{col}**: Date range detected")
+                if processed_info['date_columns']:
+                    st.write("**Date Columns:**")
+                    for col in processed_info['date_columns']:
+                        st.write(f"• **{col}**: Date range detected")
             
             # Data quality check
             st.subheader("🔍 Data Quality")
