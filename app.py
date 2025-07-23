@@ -48,7 +48,8 @@ def main():
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-      if st.button("🔄 Reset Application"):
+        
+    if st.button("🔄 Reset Application"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
             st.success("✅ Application reset successfully!")
