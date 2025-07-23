@@ -54,7 +54,21 @@ def main():
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-    
+        
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False          
+            for col in data.columns:
+                if data[col].dtype == 'object' and data[col].notna().any():
+                    sample_value = data[col].dropna().iloc[0]
+                    if looks_like_date(sample_value):
+                        try:
+                            data[col] = pd.to_datetime(data[col], errors='coerce')
+                        except:
+                            pass    
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
@@ -64,28 +78,11 @@ def data_upload_page():
         type=['csv'],
         help="Upload your CSV file to begin analysis. The file should contain structured data with column headers."
     )
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
 
-    
     if uploaded_file is not None:
         try:
             # Read CSV file
             data = pd.read_csv(uploaded_file)
-            
-            for col in data.columns:
-                if data[col].dtype == 'object' and data[col].notna().any():
-                    sample_value = data[col].dropna().iloc[0]
-                    if looks_like_date(sample_value):
-                        try:
-                            data[col] = pd.to_datetime(data[col], errors='coerce')
-                        except:
-                            pass
-            
             st.session_state.data = data
             
             # Initialize data processor
