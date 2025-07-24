@@ -95,8 +95,13 @@ def data_upload_page():
             
             st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
             # Inside the uploaded_file block after reading and parsing
+        except Exception as e:
+            st.error(f"❌ Error reading file: {str(e)}")
+            return
 
-
+    if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
+        data = st.session_state.data
+        processed_info = st.session_state.processed_data
             # Display basic information
             col1, col2, col3, col4 = st.columns(4)
             with col1:
@@ -146,12 +151,7 @@ def data_upload_page():
         
         except Exception as e:
             st.error(f"❌ Error reading file: {str(e)}")
-            st.info("Please ensure your file is a valid CSV with proper formatting.")
-            return  # prevent fallback display
-    elif st.session_state.get("file_uploaded", False):
-        data = st.session_state.data
-        processed_info = st.session_state.processed_data
-        st.info("📂 Showing previously uploaded file data.")    
+            st.info("Please ensure your file is a valid CSV with proper formatting.")    
     else:
         st.info("👆 Please upload a CSV file to get started.")
 
