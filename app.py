@@ -79,17 +79,6 @@ def data_upload_page():
             # Read CSV file
             data = pd.read_csv(uploaded_file)
             st.session_state.data = data
-
-            for col in data.columns:
-                if data[col].dtype == 'object' and data[col].notna().any():
-                    sample_value = data[col].dropna().iloc[0]
-                    if looks_like_date(sample_value):
-                        try:
-                            data[col] = pd.to_datetime(data[col], errors='coerce')
-                        except:
-                            pass
-                            
-            
             # Initialize data processor
             processor = DataProcessor(data)
             processed_info = processor.analyze_data()
@@ -107,7 +96,15 @@ def data_upload_page():
                 st.metric("Numeric Columns", len(processed_info['numeric_columns']))
             with col4:
                 st.metric("Text Columns", len(processed_info['text_columns']))
-            
+                
+            for col in data.columns:
+                if data[col].dtype == 'object' and data[col].notna().any():
+                    sample_value = data[col].dropna().iloc[0]
+                    if looks_like_date(sample_value):
+                        try:
+                            data[col] = pd.to_datetime(data[col], errors='coerce')
+                        except:
+                            pass
             # Data preview
             st.subheader("📋 Data Preview")
             st.dataframe(data.head(100), use_container_width=True)
