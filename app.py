@@ -46,12 +46,15 @@ def main():
             "Select Page",
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
+
+
  def looks_like_date(val):
-     try:
-         parse(str(val))
-         return True
-    except:
-         return False
+     if st.session_state.data is not None:
+         try:
+             parse(str(val))
+             return True
+         except:
+             return False
 
      
     if page == "📁 Data Upload":
