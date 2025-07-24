@@ -47,11 +47,11 @@ def main():
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
  def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
+     try:
+         parse(str(val))
+         return True
     except:
-        return False
+         return False
 
      
     if page == "📁 Data Upload":
