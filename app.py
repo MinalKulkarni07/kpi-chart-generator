@@ -78,6 +78,7 @@ def data_upload_page():
         try:
             # Read CSV file
             data = pd.read_csv(uploaded_file)
+            st.session_state.data = data
 
             for col in data.columns:
                 if data[col].dtype == 'object' and data[col].notna().any():
@@ -88,7 +89,6 @@ def data_upload_page():
                         except:
                             pass
                             
-            st.session_state.data = data
             
             # Initialize data processor
             processor = DataProcessor(data)
