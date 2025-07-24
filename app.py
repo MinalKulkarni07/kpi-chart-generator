@@ -99,9 +99,9 @@ def data_upload_page():
             st.error(f"❌ Error reading file: {str(e)}")
             return
 
-    if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
-        data = st.session_state.data
-        processed_info = st.session_state.processed_data
+        if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
+            data = st.session_state.data
+            processed_info = st.session_state.processed_data
             # Display basic information
             col1, col2, col3, col4 = st.columns(4)
             with col1:
