@@ -28,23 +28,8 @@ if 'processed_data' not in st.session_state:
     st.session_state.processed_data = None
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []
-
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False          
+          
             
-        for col in data.columns:
-            if data[col].dtype == 'object' and data[col].notna().any():
-                sample_value = data[col].dropna().iloc[0]
-                if looks_like_date(sample_value):
-                    try:
-                        data[col] = pd.to_datetime(data[col], errors='coerce')
-                    except:
-                        pass
-
 def main():
     st.title("📊 KPI & Chart Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
@@ -52,16 +37,23 @@ def main():
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
+        page = st.radio(
+            "Select Page",
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         if st.button("🔄 Reset Application"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
                 st.success("✅ Application reset successfully!")
                 st.rerun()
-        page = st.radio(
-            "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
-    
+ def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
+
+     
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -72,7 +64,7 @@ def main():
         settings_page()
         
  
-                        
+                       
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
@@ -121,7 +113,16 @@ def data_upload_page():
                 for col in processed_info['numeric_columns']:
                     stats = data[col].describe()
                     st.write(f"• **{col}**: {stats['count']} values, Mean: {stats['mean']:.2f}")
-                    
+
+                for col in data.columns:
+                    if data[col].dtype == 'object' and data[col].notna().any():
+                        sample_value = data[col].dropna().iloc[0]
+                        if looks_like_date(sample_value):
+                            try:
+                                data[col] = pd.to_datetime(data[col], errors='coerce')
+                            except:
+                                pass
+                                
                 if processed_info['date_columns']:
                     st.write("**Date Columns:**")
                     for col in processed_info['date_columns']:
