@@ -28,8 +28,16 @@ if 'processed_data' not in st.session_state:
     st.session_state.processed_data = None
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []
-          
-            
+
+
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
+
+
 def main():
     st.title("📊 KPI & Chart Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
@@ -47,15 +55,6 @@ def main():
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
 
-
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
-
-     
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -64,9 +63,7 @@ def looks_like_date(val):
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-        
- 
-                       
+                               
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
