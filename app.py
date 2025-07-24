@@ -99,59 +99,56 @@ def data_upload_page():
             st.error(f"❌ Error reading file: {str(e)}")
             return
 
-        if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
-            data = st.session_state.data
-            processed_info = st.session_state.processed_data
+    if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
+        data = st.session_state.data
+        processed_info = st.session_state.processed_data
             # Display basic information
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Rows", len(data))
-            with col2:
-                st.metric("Total Columns", len(data.columns))
-            with col3:
-                st.metric("Numeric Columns", len(processed_info['numeric_columns']))
-            with col4:
-                st.metric("Text Columns", len(processed_info['text_columns']))
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Total Rows", len(data))
+        with col2:
+            st.metric("Total Columns", len(data.columns))
+        with col3:
+            st.metric("Numeric Columns", len(processed_info['numeric_columns']))
+        with col4:
+            st.metric("Text Columns", len(processed_info['text_columns']))
                 
             # Data preview
-            st.subheader("📋 Data Preview")
-            st.dataframe(data.head(100), use_container_width=True)
+        st.subheader("📋 Data Preview")
+        st.dataframe(data.head(100), use_container_width=True)
             
             # Column analysis
-            st.subheader("🔍 Column Analysis")
+        st.subheader("🔍 Column Analysis")
             
-            col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
             
-            with col1:
-                st.write("**Numeric Columns:**")
-                for col in processed_info['numeric_columns']:
-                    stats = data[col].describe()
-                    st.write(f"• **{col}**: {stats['count']} values, Mean: {stats['mean']:.2f}")
-                if processed_info['date_columns']:
-                    st.write("**Date Columns:**")
-                    for col in processed_info['date_columns']:
-                        min_date = data[col].min()
-                        max_date = data[col].max()
-                        st.write(f"• **{col}**: From {min_date.date()} to {max_date.date()}")                           
-            with col2:
-                st.write("**Text/Categorical Columns:**")
-                for col in processed_info['text_columns']:
-                    unique_count = data[col].nunique()
-                    st.write(f"• **{col}**: {unique_count} unique values")
+        with col1:
+            st.write("**Numeric Columns:**")
+            for col in processed_info['numeric_columns']:
+                stats = data[col].describe()
+                st.write(f"• **{col}**: {stats['count']} values, Mean: {stats['mean']:.2f}")
+            if processed_info['date_columns']:
+                st.write("**Date Columns:**")
+                for col in processed_info['date_columns']:
+                    min_date = data[col].min()
+                    max_date = data[col].max()
+                    st.write(f"• **{col}**: From {min_date.date()} to {max_date.date()}")                           
+        with col2:
+            st.write("**Text/Categorical Columns:**")
+            for col in processed_info['text_columns']:
+                unique_count = data[col].nunique()
+                st.write(f"• **{col}**: {unique_count} unique values")
             
             # Data quality check
-            st.subheader("🔍 Data Quality")
-            missing_data = data.isnull().sum()
-            if missing_data.sum() > 0:
-                st.warning("⚠️ Missing values detected:")
-                for col, missing_count in missing_data[missing_data > 0].items():
-                    st.write(f"• **{col}**: {missing_count} missing values ({missing_count/len(data)*100:.1f}%)")
-            else:
-                st.success("✅ No missing values detected!")
-        
-        except Exception as e:
-            st.error(f"❌ Error reading file: {str(e)}")
-            st.info("Please ensure your file is a valid CSV with proper formatting.")    
+        st.subheader("🔍 Data Quality")
+        missing_data = data.isnull().sum()
+        if missing_data.sum() > 0:
+            st.warning("⚠️ Missing values detected:")
+            for col, missing_count in missing_data[missing_data > 0].items():
+                st.write(f"• **{col}**: {missing_count} missing values ({missing_count/len(data)*100:.1f}%)")
+        else:
+            st.success("✅ No missing values detected!")
+            
     else:
         st.info("👆 Please upload a CSV file to get started.")
 
