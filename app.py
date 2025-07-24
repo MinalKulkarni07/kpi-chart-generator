@@ -29,6 +29,22 @@ if 'processed_data' not in st.session_state:
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []
 
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False          
+            
+        for col in data.columns:
+            if data[col].dtype == 'object' and data[col].notna().any():
+                sample_value = data[col].dropna().iloc[0]
+                if looks_like_date(sample_value):
+                    try:
+                        data[col] = pd.to_datetime(data[col], errors='coerce')
+                    except:
+                        pass
+
 def main():
     st.title("📊 KPI & Chart Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
@@ -55,21 +71,7 @@ def main():
     elif page == "⚙️ Settings":
         settings_page()
         
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False          
-            
-        for col in data.columns:
-            if data[col].dtype == 'object' and data[col].notna().any():
-                sample_value = data[col].dropna().iloc[0]
-                if looks_like_date(sample_value):
-                    try:
-                        data[col] = pd.to_datetime(data[col], errors='coerce')
-                    except:
-                        pass 
+ 
                         
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
