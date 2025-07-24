@@ -78,7 +78,14 @@ def data_upload_page():
             processor = DataProcessor(data)
             processed_info = processor.analyze_data()
             st.session_state.processed_data = processed_info
-            
+            for col in data.columns:
+                if data[col].dtype == 'object' and data[col].notna().any():
+                    sample_value = data[col].dropna().iloc[0]
+                    if looks_like_date(sample_value):
+                        try:
+                            data[col] = pd.to_datetime(data[col], errors='coerce')
+                        except:
+                            pass
             st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
             
             # Display basic information
@@ -92,14 +99,6 @@ def data_upload_page():
             with col4:
                 st.metric("Text Columns", len(processed_info['text_columns']))
                 
-            for col in data.columns:
-                if data[col].dtype == 'object' and data[col].notna().any():
-                    sample_value = data[col].dropna().iloc[0]
-                    if looks_like_date(sample_value):
-                        try:
-                            data[col] = pd.to_datetime(data[col], errors='coerce')
-                        except:
-                            pass
             # Data preview
             st.subheader("📋 Data Preview")
             st.dataframe(data.head(100), use_container_width=True)
