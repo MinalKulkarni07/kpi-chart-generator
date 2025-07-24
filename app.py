@@ -37,14 +37,14 @@ def main():
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
-        page = st.radio(
-            "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         if st.button("🔄 Reset Application"):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
                 st.success("✅ Application reset successfully!")
                 st.rerun()
+        page = st.radio(
+            "Select Page",
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
  def looks_like_date(val):
     try:
