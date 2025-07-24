@@ -451,7 +451,7 @@ def kpi_dashboard_page():
                 st.error(f"PDF export error: {str(e)}")
 
 def chart_generator_page():
-    if st.session_state.data is None:
+    if st.session_state.get("data") is None:
         st.warning("⚠️ Please upload a CSV file first.")
         return
 
@@ -463,204 +463,145 @@ def chart_generator_page():
     # Initialize chart generator
     chart_gen = ChartGenerator(data)
 
-    # Chart configuration
-    with st.expander("⚙️ Chart Configuration", expanded=True):
-        chart_mode = st.radio(
-            "Chart Mode:",
-            ["📊 Standard Charts", "🏆 Top N Analysis"],
-            horizontal=True
-        )
+    # --- Chart Mode Selection ---
+    chart_mode = st.radio(
+        "Chart Mode:",
+        ["📊 Standard Charts", "🏆 Top N Analysis"],
+        horizontal=True,
+        key="chart_mode_selector"
+    )
 
-        if chart_mode == "📊 Standard Charts":
+    # --- Standard Charts Mode ---
+    if chart_mode == "📊 Standard Charts":
+        with st.expander("⚙️ Standard Chart Configuration", expanded=True):
             col1, col2, col3 = st.columns(3)
             with col1:
-                chart_type = st.selectbox(
+                chart_type_std = st.selectbox(
                     "Chart Type:",
-                    ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap"]
+                    ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap"],
+                    key="std_chart_type"
                 )
             with col2:
                 x_column_std = st.selectbox(
                     "X-axis:",
                     list(data.columns),
-                    key="x_standard"
+                    key="std_x_column"
                 )
             with col3:
                 y_column_std = st.selectbox(
                     "Y-axis:",
-                    processed_info['numeric_columns'] if chart_type not in ["Pie Chart", "Histogram"] else list(data.columns),
-                    key="y_standard"
+                    processed_info['numeric_columns'] if chart_type_std not in ["Pie Chart", "Histogram"] else list(data.columns),
+                    key="std_y_column"
                 )
 
-        else:  # Top N Analysis
-            chart_type = "Top N Chart"
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                top_n_chart_type = st.selectbox(
-                    "Top N Chart Type:",
-                    ["bar", "horizontal_bar", "pie"],
-                    format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x],
-                    key="top_n_type"
-                )
-            with col2:
-                n_value = st.number_input(
-                    "Number of Top Items:",
-                    min_value=3,
-                    max_value=50,
-                    value=10,
-                    help="How many top items to display"
-                )
-            with col3:
-                st.markdown("")
+            color_column = None
+            size_column = None
+            if chart_type_std in ["Scatter Plot", "Bar Chart", "Line Chart"]:
+                with st.expander("🎨 Additional Options"):
+                    col4, col5 = st.columns(2)
+                    with col4:
+                        color_column = st.selectbox("Color by (optional):", ["None"] + list(data.columns))
+                        if color_column == "None":
+                            color_column = None
+                    with col5:
+                        if chart_type_std == "Scatter Plot":
+                            size_column = st.selectbox("Size by (optional):", ["None"] + processed_info['numeric_columns'])
+                            if size_column == "None":
+                                size_column = None
 
-            col_a, col_b = st.columns(2)
-            with col_a:
-                topn_x = st.selectbox(
-                    "Category Column:",
-                    processed_info['text_columns'] + processed_info['numeric_columns'],
-                    key="x_topn"
-                )
-            with col_b:
-                topn_y = st.selectbox(
-                    "Value Column:",
-                    processed_info['numeric_columns'],
-                    key="y_topn"
-                )
+        # Generate Standard Chart
+        if st.button("🚀 Generate Standard Chart", type="primary"):
+            try:
+                fig = None
+                if chart_type_std == "Bar Chart":
+                    fig = chart_gen.create_bar_chart(x_column_std, y_column_std, color_column, data)
+                elif chart_type_std == "Line Chart":
+                    fig = chart_gen.create_line_chart(x_column_std, y_column_std, color_column, data)
+                elif chart_type_std == "Scatter Plot":
+                    fig = chart_gen.create_scatter_plot(x_column_std, y_column_std, color_column, size_column, data)
+                elif chart_type_std == "Pie Chart":
+                    fig = chart_gen.create_pie_chart(x_column_std, y_column_std, data)
+                elif chart_type_std == "Histogram":
+                    fig = chart_gen.create_histogram(x_column_std, data)
+                elif chart_type_std == "Box Plot":
+                    fig = chart_gen.create_box_plot(x_column_std, y_column_std, data)
+                elif chart_type_std == "Heatmap":
+                    fig = chart_gen.create_heatmap(data)
 
-            st.info("💡 Example: Top 10 Customers by Sales")
-
-    # Optional chart settings
-    color_column = None
-    size_column = None
-    if chart_mode == "📊 Standard Charts" and chart_type in ["Scatter Plot", "Bar Chart", "Line Chart"]:
-        with st.expander("🎨 Additional Options"):
-            col1, col2 = st.columns(2)
-            with col1:
-                color_column = st.selectbox("Color by (optional):", ["None"] + list(data.columns), key="color")
-                if color_column == "None":
-                    color_column = None
-            if chart_type == "Scatter Plot":
-                with col2:
-                    size_column = st.selectbox("Size by (optional):", ["None"] + processed_info['numeric_columns'], key="size")
-                    if size_column == "None":
-                        size_column = None
-
-    # Filters
-    with st.expander("🔍 Data Filters"):
-        if processed_info['date_columns']:
-            date_col = st.selectbox("Filter by date column:", processed_info['date_columns'], key="date_filter")
-            if date_col:
-                data[date_col] = pd.to_datetime(data[date_col], errors='coerce')
-                min_date = data[date_col].min()
-                max_date = data[date_col].max()
-                date_range = st.date_input(
-                    "Select date range:",
-                    value=[min_date, max_date],
-                    min_value=min_date,
-                    max_value=max_date,
-                    key="date_range"
-                )
-                if len(date_range) == 2:
-                    data = data[
-                        (data[date_col] >= pd.Timestamp(date_range[0])) &
-                        (data[date_col] <= pd.Timestamp(date_range[1]))
-                    ]
-
-        categorical_cols = [col for col in data.columns if data[col].dtype == 'object']
-        if categorical_cols:
-            filter_col = st.selectbox("Filter by category:", ["None"] + categorical_cols, key="cat_filter")
-            if filter_col != "None":
-                unique_values = data[filter_col].unique()
-                selected_values = st.multiselect(f"Select {filter_col} values:", unique_values, default=unique_values)
-                if selected_values:
-                    data = data[data[filter_col].isin(selected_values)]
-
-    # Generate chart
-    if st.button("🚀 Generate Chart", type="primary"):
-        try:
-            fig = None
-
-            if chart_type == "Top N Chart":
-                fig = chart_gen.create_top_n_chart(topn_x, topn_y, n_value, top_n_chart_type, data)
-            elif chart_type == "Bar Chart":
-                fig = chart_gen.create_bar_chart(x_column_std, y_column_std, color_column, data)
-            elif chart_type == "Line Chart":
-                fig = chart_gen.create_line_chart(x_column_std, y_column_std, color_column, data)
-            elif chart_type == "Scatter Plot":
-                fig = chart_gen.create_scatter_plot(x_column_std, y_column_std, color_column, size_column, data)
-            elif chart_type == "Pie Chart":
-                fig = chart_gen.create_pie_chart(x_column_std, y_column_std, data)
-            elif chart_type == "Histogram":
-                fig = chart_gen.create_histogram(x_column_std, data)
-            elif chart_type == "Box Plot":
-                fig = chart_gen.create_box_plot(x_column_std, y_column_std, data)
-            elif chart_type == "Heatmap":
-                fig = chart_gen.create_heatmap(data)
-
-            if fig:
-                st.plotly_chart(fig, use_container_width=True)
-
-                # Export
-                st.subheader("💾 Export Chart")
-                export_manager = ExportManager()
-                col1, col2 = st.columns(2)
-
-                with col1:
+                if fig:
+                    st.plotly_chart(fig, use_container_width=True)
+                    export_manager = ExportManager()
                     html_buffer = io.StringIO()
                     fig.write_html(html_buffer)
-                    st.download_button(
-                        label="🌐 HTML",
-                        data=html_buffer.getvalue(),
-                        file_name=f"{chart_type.lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
-                        mime="text/html"
-                    )
-                with col2:
-                    json_data = fig.to_json()
-                    st.download_button(
-                        label="📄 JSON",
-                        data=json_data,
-                        file_name=f"{chart_type.lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                        mime="application/json"
-                    )
-        except Exception as e:
-            st.error(f"❌ Error generating chart: {str(e)}")
+                    st.download_button("🌐 Download HTML", data=html_buffer.getvalue(), file_name="chart.html", mime="text/html")
+                    st.download_button("📄 Download JSON", data=fig.to_json(), file_name="chart.json", mime="application/json")
+            except Exception as e:
+                st.error(f"❌ Error generating chart: {str(e)}")
 
-    # Gallery section
-    if st.checkbox("📚 Generate Chart Gallery"):
-        st.subheader("📚 Chart Gallery")
-
-        st.write("**🏆 Top N Gallery:**")
-        text_cols = processed_info['text_columns'][:2]
-        numeric_cols = processed_info['numeric_columns'][:2]
-
-        if text_cols and numeric_cols:
-            gallery_cols = st.columns(2)
-            for i, (text_col, num_col) in enumerate(zip(text_cols, numeric_cols)):
-                with gallery_cols[i]:
-                    try:
-                        fig_top = chart_gen.create_top_n_chart(text_col, num_col, 5, "bar", data)
-                        st.plotly_chart(fig_top, use_container_width=True, key=f"top_{i}")
-                    except:
-                        st.info(f"⚠️ Chart for {text_col} vs {num_col} not available")
-
-        st.write("**📊 Standard Gallery:**")
-        numeric_cols = processed_info['numeric_columns'][:3]
-        for i, col in enumerate(numeric_cols):
-            st.write(f"**Charts for {col}:**")
+    # --- Top N Mode ---
+    elif chart_mode == "🏆 Top N Analysis":
+        with st.expander("⚙️ Top N Configuration", expanded=True):
             col1, col2 = st.columns(2)
             with col1:
-                try:
-                    if len(data.columns) > 0:
-                        first_col = data.columns[0]
-                        fig_bar = chart_gen.create_bar_chart(first_col, col, None, data)
-                        st.plotly_chart(fig_bar, use_container_width=True, key=f"bar_{i}")
-                except:
-                    st.info("Bar chart not available")
+                topn_x = st.selectbox("Category Column:", processed_info['text_columns'] + processed_info['numeric_columns'], key="topn_x")
             with col2:
-                try:
-                    fig_line = chart_gen.create_line_chart(first_col, col, None, data)
-                    st.plotly_chart(fig_line, use_container_width=True, key=f"line_{i}")
-                except:
-                    st.info("Line chart not available")
+                topn_y = st.selectbox("Value Column:", processed_info['numeric_columns'], key="topn_y")
+
+            col3, col4 = st.columns(2)
+            with col3:
+                top_n_chart_type = st.selectbox("Top N Chart Type:", ["bar", "horizontal_bar", "pie"],
+                                               format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x])
+            with col4:
+                n_value = st.number_input("Top N Count:", min_value=1, max_value=100, value=5)
+
+        # Generate Top N Chart
+        if st.button("🚀 Generate Top N Chart", type="primary"):
+            try:
+                fig = chart_gen.create_top_n_chart(topn_x, topn_y, n_value, top_n_chart_type, data)
+                if fig:
+                    st.plotly_chart(fig, use_container_width=True)
+                    export_manager = ExportManager()
+                    html_buffer = io.StringIO()
+                    fig.write_html(html_buffer)
+                    st.download_button("🌐 Download HTML", data=html_buffer.getvalue(), file_name="topn_chart.html", mime="text/html")
+                    st.download_button("📄 Download JSON", data=fig.to_json(), file_name="topn_chart.json", mime="application/json")
+            except Exception as e:
+                st.error(f"❌ Error generating Top N chart: {str(e)}")
+
+    # --- Chart Gallery ---
+    if st.checkbox("📚 Show Chart Gallery"):
+        st.subheader("📚 Chart Gallery")
+
+        if chart_mode == "🏆 Top N Analysis":
+            text_cols = processed_info['text_columns'][:2]
+            numeric_cols = processed_info['numeric_columns'][:2]
+            if text_cols and numeric_cols:
+                gallery_cols = st.columns(2)
+                for i, (x, y) in enumerate(zip(text_cols, numeric_cols)):
+                    with gallery_cols[i % 2]:
+                        try:
+                            fig = chart_gen.create_top_n_chart(x, y, 5, "bar", data)
+                            st.plotly_chart(fig, use_container_width=True, key=f"topn_gallery_{i}")
+                        except:
+                            st.info(f"No chart for {x} vs {y}")
+        else:
+            numeric_cols = processed_info['numeric_columns'][:3]
+            for i, col in enumerate(numeric_cols):
+                st.write(f"**Charts for {col}:**")
+                col1, col2 = st.columns(2)
+                with col1:
+                    try:
+                        fig_bar = chart_gen.create_bar_chart(data.columns[0], col, None, data)
+                        st.plotly_chart(fig_bar, use_container_width=True, key=f"bar_gallery_{i}")
+                    except:
+                        st.info("Bar chart not available")
+                with col2:
+                    try:
+                        fig_line = chart_gen.create_line_chart(data.columns[0], col, None, data)
+                        st.plotly_chart(fig_line, use_container_width=True, key=f"line_gallery_{i}")
+                    except:
+                        st.info("Line chart not available")
+
                     
 def settings_page():
     st.header("⚙️ Settings")
