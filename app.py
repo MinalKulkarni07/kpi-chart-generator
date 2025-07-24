@@ -49,12 +49,11 @@ def main():
 
 
 def looks_like_date(val):
-    if st.session_state.data is not None:
-        try:
-            parse(str(val))
-            return True
-        except:
-            return False
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
 
      
     if page == "📁 Data Upload":
