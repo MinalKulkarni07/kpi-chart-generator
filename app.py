@@ -82,13 +82,18 @@ def data_upload_page():
                             data[col] = pd.to_datetime(data[col], errors='coerce')
                         except:
                             pass
+            
             # Initialize data processor
             processor = DataProcessor(data)
             processed_info = processor.analyze_data()
             st.session_state.processed_data = processed_info
             
             st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
-            
+            # Inside the uploaded_file block after reading and parsing
+date_cols = [col for col in data.columns if np.issubdtype(data[col].dtype, np.datetime64)]
+processed_info['date_columns'] = date_cols
+st.session_state.processed_data = processed_info
+
             # Display basic information
             col1, col2, col3, col4 = st.columns(4)
             with col1:
