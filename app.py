@@ -454,259 +454,214 @@ def chart_generator_page():
     if st.session_state.data is None:
         st.warning("⚠️ Please upload a CSV file first.")
         return
-    
+
     st.header("📊 Interactive Chart Generator")
-    
+
     data = st.session_state.data
     processed_info = st.session_state.processed_data
-    
+
     # Initialize chart generator
     chart_gen = ChartGenerator(data)
-    
+
     # Chart configuration
     with st.expander("⚙️ Chart Configuration", expanded=True):
-        # Chart type selection with Top N option
         chart_mode = st.radio(
             "Chart Mode:",
             ["📊 Standard Charts", "🏆 Top N Analysis"],
             horizontal=True
         )
-        
+
         if chart_mode == "📊 Standard Charts":
             col1, col2, col3 = st.columns(3)
-            
             with col1:
                 chart_type = st.selectbox(
                     "Chart Type:",
                     ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap"]
                 )
-        
+            with col2:
+                x_column_std = st.selectbox(
+                    "X-axis:",
+                    list(data.columns),
+                    key="x_standard"
+                )
+            with col3:
+                y_column_std = st.selectbox(
+                    "Y-axis:",
+                    processed_info['numeric_columns'] if chart_type not in ["Pie Chart", "Histogram"] else list(data.columns),
+                    key="y_standard"
+                )
+
         else:  # Top N Analysis
+            chart_type = "Top N Chart"
             col1, col2, col3 = st.columns(3)
-            
             with col1:
-                chart_type = "Top N Chart"
                 top_n_chart_type = st.selectbox(
                     "Top N Chart Type:",
                     ["bar", "horizontal_bar", "pie"],
-                    format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x]
+                    format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x],
+                    key="top_n_type"
                 )
-            
             with col2:
                 n_value = st.number_input(
                     "Number of Top Items:",
                     min_value=3,
                     max_value=50,
                     value=10,
-                    help="Select how many top items to show (e.g., Top 5 customers)"
+                    help="How many top items to display"
                 )
-        
-        # Column selection based on chart mode
-        if chart_mode == "📊 Standard Charts":
-            with col2:
-                x_column = st.selectbox(
-                    "X-axis:",
-                    list(data.columns),
-                    help="Select column for X-axis"
-                )
-            
             with col3:
-                y_column = st.selectbox(
-                    "Y-axis:",
-                    processed_info['numeric_columns'] if chart_type not in ["Pie Chart", "Histogram"] else list(data.columns),
-                    help="Select column for Y-axis"
-                )
-        
-        else:  # Top N Analysis
-            with col3:
-                st.write("**Top N Configuration:**")
-            
-            # For Top N charts, we need category and value columns
-            st.write("**Select columns for Top N analysis:**")
+                st.markdown("")
+
             col_a, col_b = st.columns(2)
-            
             with col_a:
-                x_column = st.selectbox(
+                topn_x = st.selectbox(
                     "Category Column:",
                     processed_info['text_columns'] + processed_info['numeric_columns'],
-                    help="Select column to group by (e.g., Customer, Product, Region)"
+                    key="x_topn"
                 )
-            
             with col_b:
-                y_column = st.selectbox(
+                topn_y = st.selectbox(
                     "Value Column:",
                     processed_info['numeric_columns'],
-                    help="Select column to rank by (e.g., Sales, Revenue, Quantity)"
+                    key="y_topn"
                 )
-            
-            # Quick examples for Top N
-            st.info("💡 **Examples:** Top 5 Customers by Sales | Top 10 Products by Revenue | Top 3 Regions by Orders")
-    
-    # Additional options based on chart type
+
+            st.info("💡 Example: Top 10 Customers by Sales")
+
+    # Optional chart settings
     color_column = None
     size_column = None
-    
-    if chart_type in ["Scatter Plot", "Bar Chart", "Line Chart"]:
+    if chart_mode == "📊 Standard Charts" and chart_type in ["Scatter Plot", "Bar Chart", "Line Chart"]:
         with st.expander("🎨 Additional Options"):
             col1, col2 = st.columns(2)
             with col1:
-                color_column = st.selectbox(
-                    "Color by (optional):",
-                    ["None"] + list(data.columns)
-                )
+                color_column = st.selectbox("Color by (optional):", ["None"] + list(data.columns), key="color")
                 if color_column == "None":
                     color_column = None
-            
-            with col2:
-                if chart_type == "Scatter Plot":
-                    size_column = st.selectbox(
-                        "Size by (optional):",
-                        ["None"] + processed_info['numeric_columns']
-                    )
+            if chart_type == "Scatter Plot":
+                with col2:
+                    size_column = st.selectbox("Size by (optional):", ["None"] + processed_info['numeric_columns'], key="size")
                     if size_column == "None":
                         size_column = None
-    
-    # Data filtering
+
+    # Filters
     with st.expander("🔍 Data Filters"):
-        # Date range filter if date columns exist
         if processed_info['date_columns']:
-            date_col = st.selectbox("Filter by date column:", processed_info['date_columns'])
+            date_col = st.selectbox("Filter by date column:", processed_info['date_columns'], key="date_filter")
             if date_col:
                 data[date_col] = pd.to_datetime(data[date_col], errors='coerce')
                 min_date = data[date_col].min()
                 max_date = data[date_col].max()
-                
                 date_range = st.date_input(
                     "Select date range:",
                     value=[min_date, max_date],
                     min_value=min_date,
-                    max_value=max_date
+                    max_value=max_date,
+                    key="date_range"
                 )
-                
                 if len(date_range) == 2:
-                    data = data[(data[date_col] >= pd.Timestamp(date_range[0])) & 
-                              (data[date_col] <= pd.Timestamp(date_range[1]))]
-        
-        # Categorical filters
+                    data = data[
+                        (data[date_col] >= pd.Timestamp(date_range[0])) &
+                        (data[date_col] <= pd.Timestamp(date_range[1]))
+                    ]
+
         categorical_cols = [col for col in data.columns if data[col].dtype == 'object']
         if categorical_cols:
-            filter_col = st.selectbox("Filter by category:", ["None"] + categorical_cols)
+            filter_col = st.selectbox("Filter by category:", ["None"] + categorical_cols, key="cat_filter")
             if filter_col != "None":
                 unique_values = data[filter_col].unique()
-                selected_values = st.multiselect(
-                    f"Select {filter_col} values:",
-                    unique_values,
-                    default=unique_values
-                )
+                selected_values = st.multiselect(f"Select {filter_col} values:", unique_values, default=unique_values)
                 if selected_values:
                     data = data[data[filter_col].isin(selected_values)]
-    
+
     # Generate chart
     if st.button("🚀 Generate Chart", type="primary"):
         try:
             fig = None
-            
+
             if chart_type == "Top N Chart":
-                fig = chart_gen.create_top_n_chart(x_column, y_column, n_value, top_n_chart_type, data)
+                fig = chart_gen.create_top_n_chart(topn_x, topn_y, n_value, top_n_chart_type, data)
             elif chart_type == "Bar Chart":
-                fig = chart_gen.create_bar_chart(x_column, y_column, color_column, data)
+                fig = chart_gen.create_bar_chart(x_column_std, y_column_std, color_column, data)
             elif chart_type == "Line Chart":
-                fig = chart_gen.create_line_chart(x_column, y_column, color_column, data)
+                fig = chart_gen.create_line_chart(x_column_std, y_column_std, color_column, data)
             elif chart_type == "Scatter Plot":
-                fig = chart_gen.create_scatter_plot(x_column, y_column, color_column, size_column, data)
+                fig = chart_gen.create_scatter_plot(x_column_std, y_column_std, color_column, size_column, data)
             elif chart_type == "Pie Chart":
-                fig = chart_gen.create_pie_chart(x_column, y_column, data)
+                fig = chart_gen.create_pie_chart(x_column_std, y_column_std, data)
             elif chart_type == "Histogram":
-                fig = chart_gen.create_histogram(x_column, data)
+                fig = chart_gen.create_histogram(x_column_std, data)
             elif chart_type == "Box Plot":
-                fig = chart_gen.create_box_plot(x_column, y_column, data)
+                fig = chart_gen.create_box_plot(x_column_std, y_column_std, data)
             elif chart_type == "Heatmap":
                 fig = chart_gen.create_heatmap(data)
-            
+
             if fig:
                 st.plotly_chart(fig, use_container_width=True)
-                
-                # Export chart
+
+                # Export
                 st.subheader("💾 Export Chart")
-                
-                # Initialize export manager
                 export_manager = ExportManager()
-                
-                # Create download columns
                 col1, col2 = st.columns(2)
-                
+
                 with col1:
-                    # Export as HTML
                     html_buffer = io.StringIO()
                     fig.write_html(html_buffer)
-                    html_data = html_buffer.getvalue()
-                    
                     st.download_button(
                         label="🌐 HTML",
-                        data=html_data,
-                        file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                        data=html_buffer.getvalue(),
+                        file_name=f"{chart_type.lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                         mime="text/html"
                     )
-                
                 with col2:
-                    # Export as JSON
                     json_data = fig.to_json()
                     st.download_button(
                         label="📄 JSON",
                         data=json_data,
-                        file_name=f"{chart_type.lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                        file_name=f"{chart_type.lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                         mime="application/json"
                     )
-        
         except Exception as e:
             st.error(f"❌ Error generating chart: {str(e)}")
-    
-    # Chart gallery - show multiple charts
+
+    # Gallery section
     if st.checkbox("📚 Generate Chart Gallery"):
         st.subheader("📚 Chart Gallery")
-        
-        # Top N Charts Gallery
-        st.write("**🏆 Top N Analysis Gallery:**")
-        text_cols = processed_info['text_columns'][:2]  # Limit to first 2 text columns
-        numeric_cols = processed_info['numeric_columns'][:2]  # Limit to first 2 numeric columns
-        
+
+        st.write("**🏆 Top N Gallery:**")
+        text_cols = processed_info['text_columns'][:2]
+        numeric_cols = processed_info['numeric_columns'][:2]
+
         if text_cols and numeric_cols:
             gallery_cols = st.columns(2)
-            
             for i, (text_col, num_col) in enumerate(zip(text_cols, numeric_cols)):
                 with gallery_cols[i]:
                     try:
                         fig_top = chart_gen.create_top_n_chart(text_col, num_col, 5, "bar", data)
                         st.plotly_chart(fig_top, use_container_width=True, key=f"top_{i}")
                     except:
-                        st.info(f"Top 5 chart not available for {text_col} vs {num_col}")
-        
-        # Standard Charts Gallery
-        st.write("**📊 Standard Charts Gallery:**")
-        numeric_cols = processed_info['numeric_columns'][:3]  # Limit to first 3 numeric columns
-        
+                        st.info(f"⚠️ Chart for {text_col} vs {num_col} not available")
+
+        st.write("**📊 Standard Gallery:**")
+        numeric_cols = processed_info['numeric_columns'][:3]
         for i, col in enumerate(numeric_cols):
             st.write(f"**Charts for {col}:**")
             col1, col2 = st.columns(2)
-            
             with col1:
-                # Bar chart
                 try:
-                    if len(list(data.columns)) > 0:
-                        first_col = list(data.columns)[0]
+                    if len(data.columns) > 0:
+                        first_col = data.columns[0]
                         fig_bar = chart_gen.create_bar_chart(first_col, col, None, data)
                         st.plotly_chart(fig_bar, use_container_width=True, key=f"bar_{i}")
                 except:
-                    st.info("Bar chart not available for this data combination")
-            
+                    st.info("Bar chart not available")
             with col2:
-                # Line chart
                 try:
-                    fig_line = chart_gen.create_line_chart(x_column, col, None, data)
+                    fig_line = chart_gen.create_line_chart(first_col, col, None, data)
                     st.plotly_chart(fig_line, use_container_width=True, key=f"line_{i}")
                 except:
-                    st.info("Line chart not available for this data combination")
-
+                    st.info("Line chart not available")
+                    
 def settings_page():
     st.header("⚙️ Settings")
     
