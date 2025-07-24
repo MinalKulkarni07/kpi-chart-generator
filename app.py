@@ -112,7 +112,6 @@ def data_upload_page():
                 for col in processed_info['numeric_columns']:
                     stats = data[col].describe()
                     st.write(f"• **{col}**: {stats['count']} values, Mean: {stats['mean']:.2f}")
-
                 for col in data.columns:
                     if data[col].dtype == 'object' and data[col].notna().any():
                         sample_value = data[col].dropna().iloc[0]
@@ -120,14 +119,13 @@ def data_upload_page():
                             try:
                                 data[col] = pd.to_datetime(data[col], errors='coerce')
                             except:
-                                pass
-                                
-                if processed_info['date_columns']:
-                    st.write("**Date Columns:**")
-                    for col in processed_info['date_columns']:
-                        min_date = data[col].min()
-                        max_date = data[col].max()
-                        st.write(f"• **{col}**: From {min_date.date()} to {max_date.date()}")   
+                                if processed_info['date_columns']:
+                                    st.write("**Date Columns:**")
+                                    for col in processed_info['date_columns']:
+                                        min_date = data[col].min()
+                                        max_date = data[col].max()
+                                        st.write(f"• **{col}**: From {min_date.date()} to {max_date.date()}")
+                                       
             with col2:
                 st.write("**Text/Categorical Columns:**")
                 for col in processed_info['text_columns']:
