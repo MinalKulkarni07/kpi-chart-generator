@@ -6,3 +6,4 @@ kaleido
 openpyxl
 reportlab
 xlsxwriter
+python-dateutil
