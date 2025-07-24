@@ -74,10 +74,6 @@ def data_upload_page():
             # Read CSV file
             data = pd.read_csv(uploaded_file)
             st.session_state.data = data
-            # Initialize data processor
-            processor = DataProcessor(data)
-            processed_info = processor.analyze_data()
-            st.session_state.processed_data = processed_info
             for col in data.columns:
                 if data[col].dtype == 'object' and data[col].notna().any():
                     sample_value = data[col].dropna().iloc[0]
@@ -86,6 +82,11 @@ def data_upload_page():
                             data[col] = pd.to_datetime(data[col], errors='coerce')
                         except:
                             pass
+            # Initialize data processor
+            processor = DataProcessor(data)
+            processed_info = processor.analyze_data()
+            st.session_state.processed_data = processed_info
+            
             st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
             
             # Display basic information
