@@ -297,7 +297,7 @@ class ChartGenerator:
         
         return fig
     
-    def create_top_n_chart(self, category_column, value_column, n=10, chart_type="bar", data=None):
+    def create_top_n_chart(self, category_column, value_column, n=10, chart_type="bar", data=None, color_column=None):
         """Create a chart showing top N items by value"""
         if data is None:
             data = self.data
@@ -309,7 +309,13 @@ class ChartGenerator:
             
             # Sort by value and get top N
             top_data = grouped_data.nlargest(n, value_column)
-            
+
+            # Only use color_column if it's in the top_data columns
+            if color_column and color_column in top_data.columns:
+                color_arg = color_column
+            else:
+                color_arg = None
+                
             # Create chart based on type
             if chart_type == "bar":
                 fig = px.bar(
@@ -319,7 +325,7 @@ class ChartGenerator:
                     title=f"Top {n} {category_column.replace('_', ' ').title()} by {value_column.replace('_', ' ').title()}",
                     labels={category_column: category_column.replace('_', ' ').title(),
                            value_column: value_column.replace('_', ' ').title()},
-                    color=value_column,
+                    color=color_arg if color_arg else value_column,
                     color_continuous_scale="viridis"
                 )
                 fig.update_layout(xaxis_tickangle=-45)
@@ -342,7 +348,7 @@ class ChartGenerator:
                     title=f"Top {n} {category_column.replace('_', ' ').title()} by {value_column.replace('_', ' ').title()}",
                     labels={category_column: category_column.replace('_', ' ').title(),
                            value_column: value_column.replace('_', ' ').title()},
-                    color=value_column,
+                    color=color_arg if color_arg else value_column,
                     color_continuous_scale="viridis"
                 )
                 # Reverse order for better readability (highest at top)
