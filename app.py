@@ -556,43 +556,38 @@ def chart_generator_page():
                 grouped = filtered_data.groupby(cat_col)[val_col].sum().reset_index()  # <-- MOVED HERE
                 # 🔧 Define default color palette for discrete/categorical values
                 color_palette = px.colors.qualitative.Set2  # You can try Bold, Pastel, Dark2
-
                 fig = None
-               # 🔧 Determine if color_column is categorical (object or category type)
+                
+                # 🔧 Determine if color_column is categorical (object or category type)
                 is_categorical_color = False
-            
-            if color_column and pd.api.types.is_object_dtype(data[color_column]) or pd.api.types.is_categorical_dtype(data[color_column]):
-                is_categorical_color = True
+                if color_column and pd.api.types.is_object_dtype(data[color_column]) or pd.api.types.is_categorical_dtype(data[color_column]):
+                    is_categorical_color = True
 
                 # Generate based on selected chart type
                if top_chart_type == "bar":
                    fig = px.bar(grouped, x=cat_col, y=val_col, color=color_column or val_col, color_discrete_sequence=color_palette if is_categorical_color else None,
-                color_continuous_scale="viridis" if not is_categorical_color else None
-            )
+                color_continuous_scale="viridis" if not is_categorical_color else None)
                elif top_chart_type == "horizontal_bar":
                     fig = px.bar(grouped, x=val_col, y=cat_col, orientation='h', color=color_column or val_col, color_discrete_sequence=color_palette if is_categorical_color else None,
-                color_continuous_scale="viridis" if not is_categorical_color else None
-            )
+                    color_continuous_scale="viridis" if not is_categorical_color else None)
                elif top_chart_type == "pie":
                     fig = px.pie(grouped, names=cat_col, values=val_col)
                elif top_chart_type == "line":
-                    if pd.api.types.is_numeric_dtype(grouped[cat_col]) or pd.api.types.is_datetime64_any_dtype(grouped[cat_col]):
-                        fig = px.line(grouped.sort_values(cat_col),x=cat_col,y=val_col,color=color_column or None,color_discrete_sequence=color_palette if is_categorical_color else None,
-                color_continuous_scale="viridis" if not is_categorical_color else None
-            markers=True)
-                    else:
+                   if pd.api.types.is_numeric_dtype(grouped[cat_col]) or pd.api.types.is_datetime64_any_dtype(grouped[cat_col]):
+                       fig = px.line(grouped.sort_values(cat_col),x=cat_col,y=val_col,color=color_column or None,color_discrete_sequence=color_palette if is_categorical_color else None,
+                       color_continuous_scale="viridis" if not is_categorical_color else None
+                       markers=True)
+                   else:
                         st.warning("⚠️ Line chart requires a numeric or time-based X-axis. Showing scatter plot instead.")
                         fig = px.scatter(grouped,x=cat_col,y=val_col,color=color_column or None,size=val_col,title="Fallback to Scatter Plot")
-                elif top_chart_type == "scatter":
+               elif top_chart_type == "scatter":
                     fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col,color_discrete_sequence=color_palette if is_categorical_color else None,
-                color_continuous_scale="viridis" if not is_categorical_color else None
-            )  # <-- RAW data
-                elif top_chart_type == "box":
+                    color_continuous_scale="viridis" if not is_categorical_color else None)  # <-- RAW data
+               elif top_chart_type == "box":
                     fig = px.box(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col,color_discrete_sequence=color_palette if is_categorical_color else None,
-                color_continuous_scale="viridis" if not is_categorical_color else None
-            )  # <-- RAW data
-                else:
-                    raise ValueError("Unsupported chart type selected.")
+                color_continuous_scale="viridis" if not is_categorical_color else None)  # <-- RAW data
+               else:
+                   raise ValueError("Unsupported chart type selected.")
                     
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}_{top_chart_type}")
