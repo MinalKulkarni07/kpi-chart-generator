@@ -40,7 +40,7 @@ def looks_like_date(val):
         
 
 def main():
-    st.title("📊 :rainbow[KPI] & :red[Chart Generator]")
+    st.title("📊 :rainbow[KPI & Chart Generator]")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
     st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
     # Sidebar for navigation and controls
