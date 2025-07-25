@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -504,7 +505,7 @@ def chart_generator_page():
                 elif std_chart_type == "scatter":
                     fig = chart_gen.create_scatter_plot(x_col, y_col, color_col, None, data)
                 elif std_chart_type == "box":
-                    fig = chart_gen.create_box_plot(x_col, y_col, data)
+                    fig = chart_gen.create_box_plot(x_col, y_col,color_col, data)
                 else:
                     raise ValueError("Unsupported chart type selected.")
 
