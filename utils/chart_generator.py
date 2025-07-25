@@ -160,7 +160,7 @@ class ChartGenerator:
         
         return fig
     
-    def create_box_plot(self, x_column, y_column, data=None):
+    def create_box_plot(self, x_column, y_column, color_column, data=None):
         """Create a box plot"""
         if data is None:
             data = self.data
@@ -169,6 +169,7 @@ class ChartGenerator:
             data,
             x=x_column,
             y=y_column,
+            color=color_column,
             title=f"{y_column} distribution by {x_column}",
             labels={x_column: x_column.replace('_', ' ').title(),
                    y_column: y_column.replace('_', ' ').title()}
