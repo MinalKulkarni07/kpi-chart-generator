@@ -547,7 +547,12 @@ def chart_generator_page():
         if st.button("🚀 Generate Top N Chart", key="gen_top"):
             st.subheader(f"🏆 Top {top_n} Chart")
             try:
-                grouped = data.groupby(cat_col)[val_col].sum().nlargest(top_n).reset_index()
+                # Step 1: Get top N categories (based on sum of value column)
+                top_categories = data.groupby(cat_col)[val_col].sum().nlargest(top_n).index  # <-- NEW
+                filtered_data = data[data[cat_col].isin(top_categories)]  # <-- NEW
+
+                # Step 2: Grouped version only for bar/pie charts
+                grouped = filtered_data.groupby(cat_col)[val_col].sum().reset_index()  # <-- MOVED HERE
 
                 # Generate based on selected chart type
                 if top_chart_type == "bar":
@@ -557,11 +562,11 @@ def chart_generator_page():
                 elif top_chart_type == "pie":
                     fig = px.pie(grouped, names=cat_col, values=val_col)
                 elif top_chart_type == "line":
-                    fig = px.line(grouped, x=cat_col, y=val_col, color=color_column or cat_col)
+                    fig = px.line(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "scatter":
-                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)
+                    fig = px.scatter(filtered_data, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "box":
-                    fig = px.box(grouped, x=cat_col, y=val_col, color=color_column or cat_col)
+                    fig = px.box(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
                 else:
                     raise ValueError("Unsupported chart type selected.")
                     
