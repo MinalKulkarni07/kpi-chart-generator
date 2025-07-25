@@ -49,7 +49,12 @@ def main():
             "Select Page",
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
-
+    with st.sidebar:
+    st.markdown("---")
+    if st.button("🔄 Reset App", help="Clear session and restart the app"):
+        st.session_state.clear()
+        st.experimental_rerun()
+        
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -152,11 +157,6 @@ def data_upload_page():
     else:
         st.info("👆 Please upload a CSV file to get started.")
 
-if st.button("🔄 Reset Application"):
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-    st.success("✅ Application reset successfully!")
-    st.rerun()
         
 def kpi_dashboard_page():
     if st.session_state.data is None:
@@ -540,7 +540,15 @@ def chart_generator_page():
                 }.get(x, x.title()),
                 key="top_type"
             )
-
+            # Optional Color Column for Top N
+        color_column = st.selectbox(
+            "Color by (optional):",
+            ["None"] + list(data.columns),
+            index=0,
+            key="top_color"
+        )
+        color_column = None if color_column == "None" else color_column
+        
         if st.button("🚀 Generate Top N Chart", key="gen_top"):
             st.subheader(f"🏆 Top {top_n} Chart")
             try:
