@@ -50,7 +50,7 @@ def main():
             ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
         )
     with st.sidebar:
-    st.markdown("---")
+        st.markdown("---")
     if st.button("🔄 Reset App", help="Clear session and restart the app"):
         st.session_state.clear()
         st.experimental_rerun()
