@@ -606,7 +606,7 @@ def export_chart(fig, title_base):
 
     with col1:
         html_buffer = io.StringIO()
-        fig.write_html(html_buffer)
+        fig.write_html(html_buffer, include_plotlyjs='cdn', full_html=True)
         html_data = html_buffer.getvalue()
         st.download_button(
             label="🌐 Export as HTML",
