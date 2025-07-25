@@ -106,13 +106,9 @@ class ChartGenerator:
             hover_data=hover_columns
         )
 
-        fig.update_traces(
-        marker=dict(size=10, symbol="circle")
+        fig.update_traces(marker=dict(size=10, symbol="circle"))
             
-        fig.update_layout(
-            height=500,
-            showlegend=True if color_column else False
-        )
+        fig.update_layout(height=500,showlegend=True if color_column else False)
         
         return fig
     
