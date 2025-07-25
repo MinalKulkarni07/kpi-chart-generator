@@ -562,9 +562,9 @@ def chart_generator_page():
                 elif top_chart_type == "pie":
                     fig = px.pie(grouped, names=cat_col, values=val_col)
                 elif top_chart_type == "line":
-                    fig = px.line(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
+                    fig = px.line(grouped, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "scatter":
-                    fig = px.scatter(filtered_data, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)  # <-- RAW data
+                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "box":
                     fig = px.box(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
                 else:
