@@ -459,43 +459,60 @@ def chart_generator_page():
         return
 
     st.header("📊 Interactive Chart Generator")
-    
+
     data = st.session_state.data
     processed_info = st.session_state.processed_data
     chart_gen = ChartGenerator(data)
 
     chart_mode = st.radio("Select Chart Mode:", ["📊 Standard Charts", "🏆 Top N Charts"], horizontal=True)
-    
+
     if chart_mode == "📊 Standard Charts":
         st.subheader("📊 Standard Chart Configuration")
         col1, col2 = st.columns(2)
-        
+
         with col1:
             x_col = st.selectbox("Select X-axis column", list(data.columns), key="std_x")
         with col2:
             y_col = st.selectbox("Select Y-axis column", processed_info["numeric_columns"], key="std_y")
 
-        st.markdown("🎨 Additional Options")
-        color_col = st.selectbox("Color by (optional)", ["None"] + list(data.columns), key="std_color")
-        color_col = None if color_col == "None" else color_col
+        col3, col4 = st.columns(2)
+        with col3:
+            std_chart_type = st.selectbox(
+                "Chart Type",
+                ["bar", "line", "scatter", "box"],
+                format_func=lambda x: {
+                    "bar": "Bar Chart",
+                    "line": "Line Chart",
+                    "scatter": "Scatter Plot",
+                    "box": "Box Plot"
+                }.get(x, x.title()),
+                key="std_type"
+            )
+
+        with col4:
+            color_col = st.selectbox("Color by (optional)", ["None"] + list(data.columns), key="std_color")
+            color_col = None if color_col == "None" else color_col
 
         if st.button("🚀 Generate Standard Chart", key="gen_std"):
-            st.subheader("📊 Generated Standard Charts")
-            chart_list = [
-                ("📌 Bar Chart", chart_gen.create_bar_chart, [x_col, y_col, color_col, data]),
-                ("📈 Line Chart", chart_gen.create_line_chart, [x_col, y_col, color_col, data]),
-                ("🟢 Scatter Plot", chart_gen.create_scatter_plot, [x_col, y_col, color_col, None, data]),
-                ("📊 Box Plot", chart_gen.create_box_plot, [x_col, y_col, data])
-            ]
+            st.subheader("📊 Generated Standard Chart")
+            try:
+                fig = None
+                if std_chart_type == "bar":
+                    fig = chart_gen.create_bar_chart(x_col, y_col, color_col, data)
+                elif std_chart_type == "line":
+                    fig = chart_gen.create_line_chart(x_col, y_col, color_col, data)
+                elif std_chart_type == "scatter":
+                    fig = chart_gen.create_scatter_plot(x_col, y_col, color_col, None, data)
+                elif std_chart_type == "box":
+                    fig = chart_gen.create_box_plot(x_col, y_col, data)
+                else:
+                    raise ValueError("Unsupported chart type selected.")
 
-            for title, func, args in chart_list:
-                with st.expander(title, expanded=True):
-                    try:
-                        fig = func(*args)
-                        st.plotly_chart(fig, use_container_width=True)
-                        export_chart(fig, title)
-                    except Exception as e:
-                        st.error(f"Error generating {title}: {str(e)}")
+                st.plotly_chart(fig, use_container_width=True)
+                export_chart(fig, f"Standard_{std_chart_type}_{x_col}_vs_{y_col}")
+
+            except Exception as e:
+                st.error(f"Error generating standard chart: {str(e)}")
 
     else:
         st.subheader("🏆 Top N Chart Configuration")
@@ -512,17 +529,42 @@ def chart_generator_page():
         with col4:
             top_chart_type = st.selectbox(
                 "Chart Type",
-                ["bar", "horizontal_bar", "pie"],
-                format_func=lambda x: {"bar": "Vertical Bar", "horizontal_bar": "Horizontal Bar", "pie": "Pie Chart"}[x],
+                ["bar", "horizontal_bar", "pie", "line", "scatter", "box"],
+                format_func=lambda x: {
+                    "bar": "Vertical Bar",
+                    "horizontal_bar": "Horizontal Bar",
+                    "pie": "Pie Chart",
+                    "line": "Line Chart",
+                    "scatter": "Scatter Plot",
+                    "box": "Box Plot"
+                }.get(x, x.title()),
                 key="top_type"
             )
 
         if st.button("🚀 Generate Top N Chart", key="gen_top"):
             st.subheader(f"🏆 Top {top_n} Chart")
             try:
-                fig = chart_gen.create_top_n_chart(cat_col, val_col, top_n, top_chart_type, data)
+                grouped = data.groupby(cat_col)[val_col].sum().nlargest(top_n).reset_index()
+
+                fig = None
+                if top_chart_type == "bar":
+                    fig = chart_gen.create_bar_chart(grouped[cat_col], grouped[val_col], None, grouped)
+                elif top_chart_type == "horizontal_bar":
+                    fig = px.bar(grouped, x=val_col, y=cat_col, orientation='h')
+                elif top_chart_type == "pie":
+                    fig = px.pie(grouped, names=cat_col, values=val_col)
+                elif top_chart_type == "line":
+                    fig = px.line(grouped, x=cat_col, y=val_col)
+                elif top_chart_type == "scatter":
+                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=cat_col)
+                elif top_chart_type == "box":
+                    fig = px.box(grouped, x=cat_col, y=val_col)
+                else:
+                    raise ValueError("Unsupported chart type selected.")
+
                 st.plotly_chart(fig, use_container_width=True)
-                export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}")
+                export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}_{top_chart_type}")
+
             except Exception as e:
                 st.error(f"Failed to generate Top N chart: {str(e)}")
 
