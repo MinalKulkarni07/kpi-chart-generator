@@ -562,7 +562,11 @@ def chart_generator_page():
                 elif top_chart_type == "pie":
                     fig = px.pie(grouped, names=cat_col, values=val_col)
                 elif top_chart_type == "line":
-                    fig = px.line(grouped, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
+                    if pd.api.types.is_numeric_dtype(grouped[cat_col]) or pd.api.types.is_datetime64_any_dtype(grouped[cat_col]):
+                        fig = px.line(grouped.sort_values(cat_col),x=cat_col,y=val_col,color=color_column or None,markers=True)
+                    else:
+                        st.warning("⚠️ Line chart requires a numeric or time-based X-axis. Showing scatter plot instead.")
+                        fig = px.scatter(grouped,x=cat_col,y=val_col,color=color_column or None,size=val_col,title="Fallback to Scatter Plot")
                 elif top_chart_type == "scatter":
                     fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "box":
