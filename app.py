@@ -20,9 +20,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-st.write(
-    "### 🎯 **KPI & Chart Generator**"
-)
+
 
 # Initialize session state
 if 'data' not in st.session_state:
@@ -42,7 +40,7 @@ def looks_like_date(val):
         
 
 def main():
-    st.title("📊 KPI & Chart Generator")
+    st.title("📊 KPI & :red[Chart Generator]")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
     st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
     # Sidebar for navigation and controls
