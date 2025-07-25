@@ -558,9 +558,9 @@ def chart_generator_page():
                 color_palette = px.colors.qualitative.Set2  # You can try Bold, Pastel, Dark2
 
                 fig = None
-
                # 🔧 Determine if color_column is categorical (object or category type)
-               is_categorical_color = False
+                is_categorical_color = False
+            
                if color_column and pd.api.types.is_object_dtype(data[color_column]) or pd.api.types.is_categorical_dtype(data[color_column]):
                    is_categorical_color = True
 
