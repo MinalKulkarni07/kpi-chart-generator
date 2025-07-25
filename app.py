@@ -20,7 +20,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
+st.write(
+    "### 🎯 **KPI & Chart Generator**"
+)
 
 # Initialize session state
 if 'data' not in st.session_state:
