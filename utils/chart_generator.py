@@ -79,7 +79,21 @@ class ChartGenerator:
         """Create an interactive scatter plot"""
         if data is None:
             data = self.data
-        
+
+        # Validate that x_column and y_column exist in data
+        if x_column not in data.columns or y_column not in data.columns:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Invalid x or y column for scatter plot.",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5, xanchor='center', yanchor='middle',
+                font=dict(size=16)
+            )
+            return fig
+
+    # Ensure hover_data only uses valid columns
+        hover_columns = [col for col in data.columns if col not in [x_column, y_column]]
+
         fig = px.scatter(
             data,
             x=x_column,
@@ -89,9 +103,9 @@ class ChartGenerator:
             title=f"{y_column} vs {x_column}",
             labels={x_column: x_column.replace('_', ' ').title(),
                    y_column: y_column.replace('_', ' ').title()},
-            hover_data={col: True for col in data.columns if col not in [x_column, y_column]}
-            opacity=0.7
+            hover_data=hover_columns
         )
+
         fig.update_traces(
         marker=dict(size=10, symbol="circle")
             
