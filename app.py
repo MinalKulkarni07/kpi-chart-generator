@@ -552,24 +552,14 @@ def chart_generator_page():
         if st.button("🚀 Generate Top N Chart", key="gen_top"):
             st.subheader(f"🏆 Top {top_n} Chart")
             try:
-                grouped = data.groupby(cat_col)[val_col].sum().nlargest(top_n).reset_index()
-
-                fig = None
-                if top_chart_type == "bar":
-                    fig = chart_gen.create_bar_chart(grouped[cat_col], grouped[val_col], None, grouped)
-                elif top_chart_type == "horizontal_bar":
-                    fig = px.bar(grouped, x=val_col, y=cat_col, orientation='h')
-                elif top_chart_type == "pie":
-                    fig = px.pie(grouped, names=cat_col, values=val_col)
-                elif top_chart_type == "line":
-                    fig = px.line(grouped, x=cat_col, y=val_col)
-                elif top_chart_type == "scatter":
-                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=cat_col)
-                elif top_chart_type == "box":
-                    fig = px.box(grouped, x=cat_col, y=val_col)
-                else:
-                    raise ValueError("Unsupported chart type selected.")
-
+                fig = chart_gen.create_top_n_chart(
+                    category_column=cat_col,
+                    value_column=val_col,
+                    n=top_n,
+                    chart_type=top_chart_type,
+                    data=data,
+                    color_column=color_column
+                )
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}_{top_chart_type}")
 
