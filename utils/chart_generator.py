@@ -84,14 +84,17 @@ class ChartGenerator:
             data,
             x=x_column,
             y=y_column,
-            color=color_column,
-            size=size_column,
+            color=color_column if color_column else None,
+            size=size_column if size_column else None,
             title=f"{y_column} vs {x_column}",
             labels={x_column: x_column.replace('_', ' ').title(),
                    y_column: y_column.replace('_', ' ').title()},
             hover_data={col: True for col in data.columns if col not in [x_column, y_column]}
+            opacity=0.7
         )
-        
+        fig.update_traces(
+        marker=dict(size=10, symbol="circle")
+            
         fig.update_layout(
             height=500,
             showlegend=True if color_column else False
