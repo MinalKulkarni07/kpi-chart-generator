@@ -51,9 +51,9 @@ def main():
         )
     with st.sidebar:
         st.markdown("---")
-    if st.button("🔄 Reset App", help="Clear session and restart the app"):
-        st.session_state.clear()
-        st.experimental_rerun()
+        if st.button("🔄 Reset App", help="Clear session and restart the app"):
+            st.session_state.clear()
+            st.experimental_rerun()
         
     if page == "📁 Data Upload":
         data_upload_page()
