@@ -569,9 +569,9 @@ def chart_generator_page():
                         st.warning("⚠️ Line chart requires a numeric or time-based X-axis. Showing scatter plot instead.")
                         fig = px.scatter(grouped,x=cat_col,y=val_col,color=color_column or None,size=val_col,title="Fallback to Scatter Plot")
                 elif top_chart_type == "scatter":
-                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col, color_continuous_scale="viridis")  # <-- RAW data
+                    fig = px.scatter(grouped, x=cat_col, y=val_col, size=val_col, color=color_column or cat_col)  # <-- RAW data
                 elif top_chart_type == "box":
-                    fig = px.box(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col,color_continuous_scale="viridis")  # <-- RAW data
+                    fig = px.box(filtered_data, x=cat_col, y=val_col, color=color_column or cat_col)  # <-- RAW data
                 else:
                     raise ValueError("Unsupported chart type selected.")
                     
