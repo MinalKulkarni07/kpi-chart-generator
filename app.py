@@ -18,9 +18,7 @@ import streamlit.components.v1 as components
  # Read the HTML file content
 with open("analytics.html", "r") as f:
     html_code = f.read()
-
-    # Embed the HTML code
-components.html(html_code, height=0, width=0) # height and width can be 0 as it's for tracking
+    components.html(html_code, height=0, width=0) # height and width can be 0 as it's for tracking
 
 
 # Page configuration
