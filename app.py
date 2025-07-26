@@ -13,9 +13,17 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-from analytics_tracker import inject_google_analytics
 
-inject_google_analytics("G-X60YS2RYFQ")
+st.markdown("""
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-X60YS2RYFQ');
+    </script>
+""", unsafe_allow_html=True)
 
 # Page configuration
 st.set_page_config(
