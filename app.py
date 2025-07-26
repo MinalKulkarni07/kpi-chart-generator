@@ -22,7 +22,7 @@ def looks_like_date(val):
     except:
         return False
 
-def main():
+with st_analytics.track():
     # Page configuration
     st.set_page_config(
         page_title="KPI & Chart Generator",
@@ -701,6 +701,4 @@ def settings_page():
     """)
     
 
-if __name__ == "__main__":
-    with st_analytics.track():
-        main()
+
