@@ -44,7 +44,7 @@ def main():
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
 
     if 'welcome_shown' not in st.session_state:
-        show_welcome_animation()
+        show_welcome_message()
         st.session_state.welcome_shown = True
 
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
