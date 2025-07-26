@@ -14,6 +14,7 @@ from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
+import streamlit_analytics2 as st_analytics
 
 def looks_like_date(val):
     try:
