@@ -12,7 +12,7 @@ from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
-
+from welcome import show_welcome_message
 
 # Page configuration
 st.set_page_config(
@@ -42,6 +42,11 @@ def looks_like_date(val):
 
 def main():
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+
+    if 'welcome_shown' not in st.session_state:
+        show_welcome_animation()
+        st.session_state.welcome_shown = True
+
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
     st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
     # Sidebar for navigation and controls
