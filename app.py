@@ -15,14 +15,22 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
 import streamlit_analytics2 as st_analytics
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
 
+def main():
+    with st_analytics.track():
     # Page configuration
-    st.set_page_config(
-        page_title="KPI & Chart Generator",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+        st.set_page_config(
+            page_title="KPI & Chart Generator",
+            page_icon="📊",
+            layout="wide",
+            initial_sidebar_state="expanded"
+        )
       
 # Initialize session state
     if 'data' not in st.session_state:
@@ -32,14 +40,7 @@ import streamlit_analytics2 as st_analytics
     if 'selected_columns' not in st.session_state:
         st.session_state.selected_columns = []
         
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
 
-def main():
     show_lottie_welcome()
 
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
@@ -701,6 +702,5 @@ def settings_page():
     """)
     
 if __name__ == "__main__":
-    with st_analytics.track():
-        main()
+    main()
 
