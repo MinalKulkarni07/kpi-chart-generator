@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,6 +11,8 @@ from utils.data_processor import DataProcessor
 from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
+from help_guide import help_guide_page
+
 
 # Page configuration
 st.set_page_config(
@@ -48,7 +49,7 @@ def main():
         st.header("Navigation")
         page = st.radio(
             "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings"]
+            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"]
         )
     with st.sidebar:
         st.markdown("---")
@@ -64,7 +65,10 @@ def main():
         chart_generator_page()
     elif page == "⚙️ Settings":
         settings_page()
-                               
+    elif page == "❓ Help & Guide":
+    help_guide_page()
+
+
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     
