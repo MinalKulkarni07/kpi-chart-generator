@@ -13,6 +13,7 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
+from analytics_tracker import inject_google_analytics
 
 # Page configuration
 st.set_page_config(
@@ -39,6 +40,7 @@ def looks_like_date(val):
     except:
         return False
         
+inject_google_analytics("G-X60YS2RYFQ")
 
 def main():
     show_lottie_welcome()
