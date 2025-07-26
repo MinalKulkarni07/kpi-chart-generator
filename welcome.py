@@ -22,4 +22,5 @@ def show_lottie_welcome():
                 key="welcome_animation"
             )
 
-            time.sleep(1.5)
+            time.sleep(3)
+            st.session_state.welcome_shown = True
