@@ -14,15 +14,7 @@ from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-X60YS2RYFQ');
-</script>
 
 # Page configuration
 st.set_page_config(
@@ -50,6 +42,16 @@ def looks_like_date(val):
         return False
         
 def main():
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X60YS2RYFQ');
+  </script>
+
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
