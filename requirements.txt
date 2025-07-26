@@ -8,3 +8,4 @@ reportlab
 xlsxwriter
 python-dateutil
 streamlit-lottie
+streamlit-analytics2
