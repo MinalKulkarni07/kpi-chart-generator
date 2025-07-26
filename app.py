@@ -15,7 +15,7 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
     
-st.markdown("""
+st.html("""
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
     <script>
@@ -25,7 +25,7 @@ st.markdown("""
 
       gtag('config', 'G-X60YS2RYFQ');
     </script>
-   """, unsafe_allow_html=True)
+   """)
 
 
 # Page configuration
