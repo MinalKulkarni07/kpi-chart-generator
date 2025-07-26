@@ -18,5 +18,5 @@ def show_lottie_welcome():
             if lottie_json:
                 st_lottie(lottie_json, height=300, key="welcome_lottie")
 
-        time.sleep(3)  # wait 3 seconds
+        time.sleep(5)  # wait 3 seconds
         placeholder.empty()  # auto-dismiss the welcome section
