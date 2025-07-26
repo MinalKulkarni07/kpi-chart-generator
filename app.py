@@ -15,6 +15,8 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 from analytics_tracker import inject_google_analytics
 
+inject_google_analytics("G-X60YS2RYFQ")
+
 # Page configuration
 st.set_page_config(
     page_title="KPI & Chart Generator",
@@ -40,8 +42,6 @@ def looks_like_date(val):
     except:
         return False
         
-inject_google_analytics("G-X60YS2RYFQ")
-
 def main():
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
