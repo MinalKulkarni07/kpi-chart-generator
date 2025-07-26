@@ -15,11 +15,21 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
     
- # Read the HTML file content
-with open("analytics.html", "r") as f:
-    html_code = f.read()
-    components.html(html_code, height=0, width=0) # height and width can be 0 as it's for tracking
-
+<!DOCTYPE html>
+<html>
+<head>
+   #<!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X60YS2RYFQ');
+    </script>
+</head>
+<body>
+</body>
+</html>
 
 # Page configuration
 st.set_page_config(
