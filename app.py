@@ -16,12 +16,7 @@ from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
 import streamlit_analytics2 as st_analytics
 
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
+
 
 with st_analytics.track():
     # Page configuration
@@ -31,12 +26,7 @@ with st_analytics.track():
         layout="wide",
         initial_sidebar_state="expanded"
     )
-    
-    show_lottie_welcome()
-
-    st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
-    st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-    
+      
 # Initialize session state
     if 'data' not in st.session_state:
         st.session_state.data = None
@@ -44,7 +34,19 @@ with st_analytics.track():
         st.session_state.processed_data = None
     if 'selected_columns' not in st.session_state:
         st.session_state.selected_columns = []
+        
+def looks_like_date(val):
+    try:
+        parse(str(val))
+        return True
+    except:
+        return False
 
+def main():
+    show_lottie_welcome()
+
+    st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+    st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
@@ -701,5 +703,6 @@ def settings_page():
     - **NumPy** for numerical computations
     """)
     
-
+if __name__ == "__main__":
+    main()
 
