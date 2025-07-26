@@ -15,21 +15,18 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
     
-<!DOCTYPE html>
-<html>
-<head>
-   #<!-- Google tag (gtag.js) -->
+st.markdown("""
+    <!-- Google tag (gtag.js) -->"""
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-X60YS2RYFQ');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-X60YS2RYFQ');
     </script>
-</head>
-<body>
-</body>
-</html>
+   , unsafe_allow_html=True)
+
 
 # Page configuration
 st.set_page_config(
