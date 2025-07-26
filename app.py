@@ -66,7 +66,7 @@ def main():
     elif page == "⚙️ Settings":
         settings_page()
     elif page == "❓ Help & Guide":
-    help_guide_page()
+        help_guide_page()
 
 
 def data_upload_page():
