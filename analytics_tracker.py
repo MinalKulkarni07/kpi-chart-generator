@@ -19,4 +19,4 @@ def inject_google_analytics(measurement_id: str):
     """
     st.markdown(ga_code, unsafe_allow_html=True)
 
-Added analytics_tracker.py for Google Analytics integration
+#Added analytics_tracker.py for Google Analytics integration
