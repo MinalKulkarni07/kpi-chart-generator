@@ -47,12 +47,10 @@ def main():
     st.info("⚠️ This app does not save your uploaded files. If the connection drops or page refreshes, please re-upload your CSV.")
     # Sidebar for navigation and controls
     with st.sidebar:
-    with st.expander("📂 Open Navigation", expanded=False):
-        page = st.radio(
-            "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings",  "❓ Help & Guide"]
-        )
-
+        with st.expander("📂 Open Navigation", expanded=False):
+            page = st.radio(
+                "Select Page",
+                ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings",  "❓ Help & Guide"])
     with st.expander("🧹 App Actions", expanded=False):
         if st.button("🔄 Reset App", help="Clear session and restart the app"):
             st.session_state.clear()
