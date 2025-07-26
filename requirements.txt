@@ -7,3 +7,4 @@ openpyxl
 reportlab
 xlsxwriter
 python-dateutil
+streamlit-lottie
