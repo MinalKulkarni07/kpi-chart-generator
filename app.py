@@ -16,9 +16,6 @@ from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
 import streamlit_analytics2 as st_analytics
 
-
-
-with st_analytics.track():
     # Page configuration
     st.set_page_config(
         page_title="KPI & Chart Generator",
@@ -704,5 +701,6 @@ def settings_page():
     """)
     
 if __name__ == "__main__":
-    main()
+    with st_analytics.track():
+        main()
 
