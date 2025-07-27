@@ -23,7 +23,7 @@ def looks_like_date(val):
     except:
         return False
 
-def main():
+
     with st_analytics.track():
     # Page configuration
         st.set_page_config(
@@ -41,7 +41,7 @@ def main():
     if 'selected_columns' not in st.session_state:
         st.session_state.selected_columns = []
         
-
+def main():
     show_lottie_welcome()
 
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
