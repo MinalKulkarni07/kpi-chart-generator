@@ -15,16 +15,15 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit_analytics2 as st_analytics
 
-with st_analytics.track():
-    def looks_like_date(val):
+def looks_like_date(val):
         try:
             parse(str(val))
             return True
         except:
             return False
             
-            
-        # Page configuration
+
+    # Page configuration
         st.set_page_config(
             page_title="KPI & Chart Generator",
             page_icon="📊",
@@ -41,6 +40,7 @@ with st_analytics.track():
             st.session_state.selected_columns = []
 
         def main():
+            with st_analytics.track():
             show_lottie_welcome()
             st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
             st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
