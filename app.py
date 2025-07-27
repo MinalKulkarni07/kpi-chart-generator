@@ -69,7 +69,7 @@ def main():
         st.markdown("---")
         if st.button("🔄 Reset App", help="Clear session and restart the app"):
             st.session_state.clear()
-            st.experimental_rerun()
+            st.rerun()
 
     if page == "📁 Data Upload":
         data_upload_page()
