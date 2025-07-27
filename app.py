@@ -23,12 +23,6 @@ def looks_like_date(val):
         return False
             
 with st_analytics.track(verbose=True):
-    # Simulate a pageview
-    st_analytics.track_event("test_event", {
-        "action": "page_load",
-        "page": "manual_test"
-    })
-    
     # Page configuration
     st.set_page_config(
         page_title="KPI & Chart Generator",
