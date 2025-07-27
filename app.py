@@ -13,7 +13,7 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-import streamlit_analytics2 as streamlit_analytics
+
 
 def looks_like_date(val):
     try:
@@ -22,14 +22,14 @@ def looks_like_date(val):
     except:
         return False
             
-with streamlit_analytics.track(verbose=True):
+
     # Page configuration
-    st.set_page_config(
-        page_title="KPI & Chart Generator",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+st.set_page_config(
+    page_title="KPI & Chart Generator",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
       
 # Initialize session state
 if 'data' not in st.session_state:
