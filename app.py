@@ -29,7 +29,7 @@ with st_analytics.track(
         page_icon="📊",
         layout="wide",
         initial_sidebar_state="expanded"
-    ))
+    )):
       # Initialize session state
     if 'data' not in st.session_state:
         st.session_state.data = None
