@@ -22,10 +22,11 @@ def looks_like_date(val):
         return True
     except:
         return False
-
-with st_analytics.track():
-    # Page configuration
-    st.set_page_config(
+        
+def main():
+    with st_analytics.track():
+        # Page configuration
+        st.set_page_config(
         page_title="KPI & Chart Generator",
         page_icon="📊",
         layout="wide",
@@ -40,7 +41,7 @@ with st_analytics.track():
     if 'selected_columns' not in st.session_state:
         st.session_state.selected_columns = []
         
-def main():
+
     show_lottie_welcome()
 
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
