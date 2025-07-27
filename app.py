@@ -22,7 +22,7 @@ def looks_like_date(val):
     except:
         return False
             
-with st_analytics.track():
+with st_analytics.track(verbose=True):
     # Page configuration
     st.set_page_config(
         page_title="KPI & Chart Generator",
