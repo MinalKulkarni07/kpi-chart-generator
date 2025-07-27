@@ -72,12 +72,11 @@ def main():
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     # File uploader
-    with st_analytics.track(
     uploaded_file = st.file_uploader(
         "Choose a CSV file",
         type=['csv'],
         help="Upload your CSV file to begin analysis. The file should contain structured data with column headers."
-    )):
+    )
 
     if uploaded_file is not None:
         try:
