@@ -13,87 +13,66 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-import streamlit.components.v1 as components
+import streamlit_analytics2 as st_analytics
 
-GA_TRACKING_ID = "G-X60YS2RYFQ"
-
-components.html(
-    f"""
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){{dataLayer.push(arguments);}}
-      gtag('js', new Date());
-      gtag('config', '{GA_TRACKING_ID}');
-    </script>
-    """,
-    height=0,
-)
-
-def looks_like_date(val):
-    try:
-        parse(str(val))
-        return True
-    except:
-        return False
-        
-def main():
-    # Page configuration
-    st.set_page_config(
-    page_title="KPI & Chart Generator",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded")
+with st_analytics.track():
+    def looks_like_date(val):
+        try:
+            parse(str(val))
+            return True
+        except:
+            return False
+            
+            
+    def main():
+        show_lottie_welcome()
+        # Page configuration
+        st.set_page_config(
+        page_title="KPI & Chart Generator",
+        page_icon="📊",
+        layout="wide",
+        initial_sidebar_state="expanded")
       
-# Initialize session state
-    if 'data' not in st.session_state:
-        st.session_state.data = None
-    if 'processed_data' not in st.session_state:
-        st.session_state.processed_data = None
-    if 'selected_columns' not in st.session_state:
-        st.session_state.selected_columns = []
-        
+   # Initialize session state
+       if 'data' not in st.session_state:
+           st.session_state.data = None
+       if 'processed_data' not in st.session_state:
+           st.session_state.processed_data = None
+       if 'selected_columns' not in st.session_state:
+           st.session_state.selected_columns = []
+        st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+        st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
+       # Sidebar for navigation and controls
+       with st.sidebar:
+           st.header("Navigation")
+           page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
+       with st.sidebar:
+           st.markdown("---")
+           if st.button("🔄 Reset App", help="Clear session and restart the app"):
+               st.session_state.clear()
+               st.experimental_rerun()
 
-    show_lottie_welcome()
-
-    st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
-    st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-    # Sidebar for navigation and controls
-    with st.sidebar:
-        st.header("Navigation")
-        page = st.radio(
-            "Select Page",
-            ["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"]
-        )
-    with st.sidebar:
-        st.markdown("---")
-        if st.button("🔄 Reset App", help="Clear session and restart the app"):
-            st.session_state.clear()
-            st.experimental_rerun()
-
-        
-    if page == "📁 Data Upload":
-        data_upload_page()
-    elif page == "📈 KPI Dashboard":
-        kpi_dashboard_page()
-    elif page == "📊 Chart Generator":
-        chart_generator_page()
-    elif page == "⚙️ Settings":
-        settings_page()
-    elif page == "❓ Help & Guide":
-        help_guide_page()
-
-
-def data_upload_page():
-    st.header("📁 Data Upload & Preview")
+        if page == "📁 Data Upload":
+            data_upload_page()
+        elif page == "📈 KPI Dashboard":
+            kpi_dashboard_page()
+        elif page == "📊 Chart Generator":
+            chart_generator_page()
+        elif page == "⚙️ Settings":
+            settings_page()
+        elif page == "❓ Help & Guide":
+            help_guide_page()
     
-    # File uploader
-    uploaded_file = st.file_uploader(
-        "Choose a CSV file",
-        type=['csv'],
-        help="Upload your CSV file to begin analysis. The file should contain structured data with column headers."
-    )
+
+
+     def data_upload_page():
+         st.header("📁 Data Upload & Preview")
+    
+        # File uploader
+       uploaded_file = st.file_uploader(
+           "Choose a CSV file",
+           type=['csv'],
+           help="Upload your CSV file to begin analysis. The file should contain structured data with column headers.")
 
     if uploaded_file is not None:
         try:
