@@ -607,7 +607,6 @@ def export_chart(fig, title_base):
             file_name=f"{title_base.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
             mime="application/json"
         )
-
                     
 def settings_page():
     st.header("⚙️ Settings")
