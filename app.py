@@ -30,32 +30,30 @@ with st_analytics.track():
         layout="wide",
         initial_sidebar_state="expanded"
     )
-        
-      # Initialize session state
-       if 'data' not in st.session_state:
-           st.session_state.data = None
-       if 'processed_data' not in st.session_state:
-           st.session_state.processed_data = None
-       if 'selected_columns' not in st.session_state:
-           st.session_state.selected_columns = []        
+      
+# Initialize session state
+if 'data' not in st.session_state:
+    st.session_state.data = None
+if 'processed_data' not in st.session_state:
+    st.session_state.processed_data = None
+if 'selected_columns' not in st.session_state:
+    st.session_state.selected_columns = []        
 
 def main():
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-
+          
     # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
         page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
-            
     with st.sidebar:
         st.markdown("---")
         if st.button("🔄 Reset App", help="Clear session and restart the app"):
             st.session_state.clear()
             st.experimental_rerun()
 
-            
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -605,6 +603,7 @@ def export_chart(fig, title_base):
             file_name=f"{title_base.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
             mime="application/json"
         )
+
                     
 def settings_page():
     st.header("⚙️ Settings")
