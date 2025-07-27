@@ -22,14 +22,14 @@ def looks_like_date(val):
     except:
         return False
             
-
+with st_analytics.track(
 # Page configuration
 st.set_page_config(
     page_title="KPI & Chart Generator",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
-)
+)):
       
 # Initialize session state
 if 'data' not in st.session_state:
@@ -40,21 +40,23 @@ if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []        
 
 def main():
-    with st_analytics.track():
-        show_lottie_welcome()
+    with st_analytics.track(
+        show_lottie_welcome()):
         st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
         st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-          
+
         # Sidebar for navigation and controls
         with st.sidebar:
             st.header("Navigation")
             page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
+            
         with st.sidebar:
             st.markdown("---")
             if st.button("🔄 Reset App", help="Clear session and restart the app"):
                 st.session_state.clear()
                 st.experimental_rerun()
 
+            
         if page == "📁 Data Upload":
             data_upload_page()
         elif page == "📈 KPI Dashboard":
@@ -70,11 +72,12 @@ def main():
 def data_upload_page():
     st.header("📁 Data Upload & Preview")
     # File uploader
+    with st_analytics.track(
     uploaded_file = st.file_uploader(
         "Choose a CSV file",
         type=['csv'],
         help="Upload your CSV file to begin analysis. The file should contain structured data with column headers."
-    )
+    )):
 
     if uploaded_file is not None:
         try:
