@@ -13,6 +13,22 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
+import streamlit.components.v1 as components
+
+def inject_ga4():
+    components.html(
+        """
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-X60YS2RYFQ');
+        </script>
+        """,
+        height=0  # Don't display anything visually
+    )
 
 
 def looks_like_date(val):
@@ -40,6 +56,7 @@ if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []        
 
 def main():
+    inject_ga4()
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
