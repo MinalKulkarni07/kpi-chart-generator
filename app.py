@@ -22,14 +22,14 @@ def looks_like_date(val):
     except:
         return False
             
-with st_analytics.track(
+with st_analytics.track():
     # Page configuration
     st.set_page_config(
         page_title="KPI & Chart Generator",
         page_icon="📊",
         layout="wide",
         initial_sidebar_state="expanded"
-    )):
+    )
         
       # Initialize session state
        if 'data' not in st.session_state:
@@ -40,12 +40,11 @@ with st_analytics.track(
            st.session_state.selected_columns = []        
 
 def main():
-    with st_analytics.track(
-        show_lottie_welcome()):
-            st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
-            st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
+    show_lottie_welcome()
+    st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+    st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
 
-        # Sidebar for navigation and controls
+    # Sidebar for navigation and controls
     with st.sidebar:
         st.header("Navigation")
         page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
