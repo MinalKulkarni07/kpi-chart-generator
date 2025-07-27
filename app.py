@@ -23,15 +23,14 @@ def looks_like_date(val):
     except:
         return False
 
-
-    with st_analytics.track():
+with st_analytics.track():
     # Page configuration
-        st.set_page_config(
-            page_title="KPI & Chart Generator",
-            page_icon="📊",
-            layout="wide",
-            initial_sidebar_state="expanded"
-        )
+    st.set_page_config(
+        page_title="KPI & Chart Generator",
+        page_icon="📊",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
       
 # Initialize session state
     if 'data' not in st.session_state:
