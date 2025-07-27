@@ -24,85 +24,86 @@ with st_analytics.track():
             return False
             
             
-    def main():
-        show_lottie_welcome()
         # Page configuration
         st.set_page_config(
-        page_title="KPI & Chart Generator",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded")
+            page_title="KPI & Chart Generator",
+            page_icon="📊",
+            layout="wide",
+            initial_sidebar_state="expanded"
+        )
       
-   # Initialize session state
-       if 'data' not in st.session_state:
-           st.session_state.data = None
-       if 'processed_data' not in st.session_state:
-           st.session_state.processed_data = None
-       if 'selected_columns' not in st.session_state:
-           st.session_state.selected_columns = []
-        st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
-        st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
-       # Sidebar for navigation and controls
-       with st.sidebar:
-           st.header("Navigation")
-           page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
-       with st.sidebar:
-           st.markdown("---")
-           if st.button("🔄 Reset App", help="Clear session and restart the app"):
-               st.session_state.clear()
-               st.experimental_rerun()
+        # Initialize session state
+        if 'data' not in st.session_state:
+            st.session_state.data = None
+        if 'processed_data' not in st.session_state:
+            st.session_state.processed_data = None
+        if 'selected_columns' not in st.session_state:
+            st.session_state.selected_columns = []
 
-        if page == "📁 Data Upload":
-            data_upload_page()
-        elif page == "📈 KPI Dashboard":
-            kpi_dashboard_page()
-        elif page == "📊 Chart Generator":
-            chart_generator_page()
-        elif page == "⚙️ Settings":
-            settings_page()
-        elif page == "❓ Help & Guide":
-            help_guide_page()
+        def main():
+            show_lottie_welcome()
+            st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+            st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
+          
+            # Sidebar for navigation and controls
+            with st.sidebar:
+                st.header("Navigation")
+                page = st.radio("Select Page",["📁 Data Upload", "📈 KPI Dashboard", "📊 Chart Generator", "⚙️ Settings", "❓ Help & Guide"])
+            with st.sidebar:
+                st.markdown("---")
+                if st.button("🔄 Reset App", help="Clear session and restart the app"):
+                    st.session_state.clear()
+                    st.experimental_rerun()
+
+            if page == "📁 Data Upload":
+                data_upload_page()
+            elif page == "📈 KPI Dashboard":
+                kpi_dashboard_page()
+            elif page == "📊 Chart Generator":
+                chart_generator_page()
+            elif page == "⚙️ Settings":
+                settings_page()
+            elif page == "❓ Help & Guide":
+                help_guide_page()
+
     
+        def data_upload_page():
+            st.header("📁 Data Upload & Preview")
+            # File uploader
+            uploaded_file = st.file_uploader(
+                "Choose a CSV file",
+                type=['csv'],
+                help="Upload your CSV file to begin analysis. The file should contain structured data with column headers.")
 
-
-     def data_upload_page():
-         st.header("📁 Data Upload & Preview")
-    
-        # File uploader
-       uploaded_file = st.file_uploader(
-           "Choose a CSV file",
-           type=['csv'],
-           help="Upload your CSV file to begin analysis. The file should contain structured data with column headers.")
-
-    if uploaded_file is not None:
-        try:
-            # Read CSV file
-            data = pd.read_csv(uploaded_file)
-            st.session_state.data = data
-            for col in data.columns:
-                if data[col].dtype == 'object' and data[col].notna().any():
-                    sample_value = data[col].dropna().iloc[0]
-                    if looks_like_date(sample_value):
-                        try:
-                            data[col] = pd.to_datetime(data[col], errors='coerce')
-                        except:
-                            pass
+            if uploaded_file is not None:
+                try:
+                    # Read CSV file
+                    data = pd.read_csv(uploaded_file)
+                    st.session_state.data = data
+                    for col in data.columns:
+                        if data[col].dtype == 'object' and data[col].notna().any():
+                            sample_value = data[col].dropna().iloc[0]
+                            if looks_like_date(sample_value):
+                                try:
+                                    data[col] = pd.to_datetime(data[col], errors='coerce')
+                                except:
+                                    pass
             
-            # Initialize data processor
-            processor = DataProcessor(data)
-            processed_info = processor.analyze_data()
+                    # Initialize data processor
+                    processor = DataProcessor(data)
+                    processed_info = processor.analyze_data()
             
-            date_cols = [col for col in data.columns if np.issubdtype(data[col].dtype, np.datetime64)]
-            processed_info['date_columns'] = date_cols
+                    date_cols = [col for col in data.columns if np.issubdtype(data[col].dtype, np.datetime64)]
+                    processed_info['date_columns'] = date_cols
             
-            st.session_state.processed_data = processed_info
-            st.session_state.file_uploaded = True
+                    st.session_state.processed_data = processed_info
+                    st.session_state.file_uploaded = True
             
-            st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
-            # Inside the uploaded_file block after reading and parsing
-        except Exception as e:
-            st.error(f"❌ Error reading file: {str(e)}")
-            return
+                    st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
+                    # Inside the uploaded_file block after reading and parsing
+                except Exception as e:
+                    st.error(f"❌ Error reading file: {str(e)}")
+                    return
 
     if st.session_state.get("data") is not None and st.session_state.get("processed_data") is not None:
         data = st.session_state.data
