@@ -23,21 +23,20 @@ def looks_like_date(val):
         return False
             
 with st_analytics.track(
-# Page configuration
-st.set_page_config(
-    page_title="KPI & Chart Generator",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)):
-      
-# Initialize session state
-if 'data' not in st.session_state:
-    st.session_state.data = None
-if 'processed_data' not in st.session_state:
-    st.session_state.processed_data = None
-if 'selected_columns' not in st.session_state:
-    st.session_state.selected_columns = []        
+    # Page configuration
+    st.set_page_config(
+        page_title="KPI & Chart Generator",
+        page_icon="📊",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    ))
+      # Initialize session state
+    if 'data' not in st.session_state:
+        st.session_state.data = None
+    if 'processed_data' not in st.session_state:
+        st.session_state.processed_data = None
+    if 'selected_columns' not in st.session_state:
+        st.session_state.selected_columns = []        
 
 def main():
     with st_analytics.track(
