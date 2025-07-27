@@ -14,7 +14,22 @@ from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
-import streamlit_analytics2 as st_analytics
+
+GA_TRACKING_ID = "G-X60YS2RYFQ"
+
+components.html(
+    f"""
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_TRACKING_ID}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', '{GA_TRACKING_ID}');
+    </script>
+    """,
+    height=0,
+)
 
 def looks_like_date(val):
     try:
@@ -24,14 +39,12 @@ def looks_like_date(val):
         return False
         
 def main():
-    with st_analytics.track():
-        # Page configuration
-        st.set_page_config(
-        page_title="KPI & Chart Generator",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+    # Page configuration
+    st.set_page_config(
+    page_title="KPI & Chart Generator",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded")
       
 # Initialize session state
     if 'data' not in st.session_state:
