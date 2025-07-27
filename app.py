@@ -30,19 +30,20 @@ with st_analytics.track(
         layout="wide",
         initial_sidebar_state="expanded"
     )):
+        
       # Initialize session state
-    if 'data' not in st.session_state:
-        st.session_state.data = None
-    if 'processed_data' not in st.session_state:
-        st.session_state.processed_data = None
-    if 'selected_columns' not in st.session_state:
-        st.session_state.selected_columns = []        
+       if 'data' not in st.session_state:
+           st.session_state.data = None
+       if 'processed_data' not in st.session_state:
+           st.session_state.processed_data = None
+       if 'selected_columns' not in st.session_state:
+           st.session_state.selected_columns = []        
 
 def main():
     with st_analytics.track(
         show_lottie_welcome()):
-        st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
-        st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
+            st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
+            st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
 
         # Sidebar for navigation and controls
         with st.sidebar:
