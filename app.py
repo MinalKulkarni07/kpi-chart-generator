@@ -13,10 +13,8 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-from streamlit_analytics import streamlit_analytics as st_analytics
+import streamlit_analytics2 as st_analytics
 
-with st_analytics.track(google_analytics_id="G-X60YS2RYFQ"):
-    main()
 
 def looks_like_date(val):
     try:
@@ -698,7 +696,11 @@ def settings_page():
     """)
     
 if __name__ == "__main__":
-    main()
+    import streamlit_analytics2 as st_analytics
+
+    with st_analytics.track(verbose=True):
+        main()
+  
 
        
                     
