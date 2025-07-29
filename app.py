@@ -55,8 +55,9 @@ if 'processed_data' not in st.session_state:
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []        
 
-inject_gtm()
+
 def main():
+    inject_gtm()
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
