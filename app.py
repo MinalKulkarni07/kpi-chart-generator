@@ -15,20 +15,20 @@ from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import streamlit.components.v1 as components
 
-def inject_ga4():
+def inject_gtm():
     components.html(
         """
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-X60YS2RYFQ');
-        </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-MLQQSDSF');</script>
+        <!-- End Google Tag Manager -->
         """,
-        height=0  # Don't display anything visually
+        height=0
     )
+
 
 
 def looks_like_date(val):
@@ -55,6 +55,7 @@ if 'processed_data' not in st.session_state:
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []        
 
+inject_gtm()
 def main():
     inject_ga4()
     show_lottie_welcome()
