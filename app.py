@@ -713,10 +713,7 @@ def settings_page():
     """)
     
 if __name__ == "__main__":
-    import streamlit_analytics2 as st_analytics
-
-    with st_analytics.track(verbose=True):
-        main()
+    main()
   
 
        
