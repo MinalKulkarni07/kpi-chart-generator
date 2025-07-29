@@ -13,23 +13,21 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-import streamlit.components.v1 as components
+import requests
+from datetime import datetime
 
-def inject_ga4():
-    components.html(
-        """
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-X60YS2RYFQ"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-X60YS2RYFQ');
-        </script>
-        """,
-        height=0
-    )
-
+def log_to_google_sheets(event, page, user_info="anonymous", notes=""):
+    url = "https://script.google.com/macros/s/AKfycbwXo2emErt44h50gEcoLgQJwRZYduk7Y-fe5J_cL7tbta1LHeWhbrKhLCNjIrdbkMUH7g/exec"  # Replace with your copied script URL
+    payload = {
+        "event": event,
+        "page": page,
+        "user_info": user_info,
+        "notes": notes,
+    }
+    try:
+        requests.post(url, json=payload, timeout=3)
+    except:
+        pass  # Fail silently to avoid app interruption
 
 
 def looks_like_date(val):
@@ -58,7 +56,7 @@ if 'selected_columns' not in st.session_state:
 
 
 def main():
-    inject_ga4()
+    log_to_google_sheets("Page Load", "Home Page", user_info="Guest")
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
