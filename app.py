@@ -122,6 +122,11 @@ def data_upload_page():
             st.session_state.file_uploaded = True
             
             st.success(f"✅ File uploaded successfully! Dataset contains {len(data)} rows and {len(data.columns)} columns.")
+            log_to_google_sheets(
+            event="File Uploaded",
+            page="Data Upload",
+            user_info=str(st.session_state.get("user", "Guest")),
+            notes=uploaded_file.name)
             # Inside the uploaded_file block after reading and parsing
         except Exception as e:
             st.error(f"❌ Error reading file: {str(e)}")
