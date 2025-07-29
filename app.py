@@ -26,9 +26,9 @@ def log_to_google_sheets(event, page, user_info="anonymous", notes=""):
     }
     try:
         requests.post(url, json=payload, timeout=3)
-    except:
-        pass  # Fail silently to avoid app interruption
-
+    except Exception as e:
+        print("Logging failed:", e)
+   
 
 def looks_like_date(val):
     try:
@@ -56,7 +56,12 @@ if 'selected_columns' not in st.session_state:
 
 
 def main():
-    log_to_google_sheets("Page Load", "Home Page", user_info="Guest")
+    log_to_google_sheets(
+    event="App Opened",
+    page="Home",
+    user_info=str(st.session_state.get("user", "Guest")),
+    notes="Landing"
+)
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
