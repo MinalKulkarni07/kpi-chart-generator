@@ -13,25 +13,10 @@ from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
-import streamlit.components.v1 as components
+from streamlit_analytics import streamlit_analytics as st_analytics
 
-# Inject Google Tag Manager (GTM) manually
-st.markdown("""
-<!-- Google Tag Manager -->
-<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MLQQSDSF"
-height="0" width="0" style="display:none;visibility:hidden"></iframe>
-<script>
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MLQQSDSF');
-</script>
-<!-- End Google Tag Manager -->
-""", unsafe_allow_html=True)
-
-
-
+with st_analytics.track(google_analytics_id="G-X60YS2RYFQ"):
+    main()
 
 def looks_like_date(val):
     try:
