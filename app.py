@@ -42,7 +42,6 @@ if 'processed_data' not in st.session_state:
 if 'selected_columns' not in st.session_state:
     st.session_state.selected_columns = []        
 
-
 def main():
     log_to_google_sheets(
     event="App Opened",
@@ -93,7 +92,6 @@ def main():
                 else:
                     st.warning("Please write something before submitting.")
 
-
     if page == "📁 Data Upload":
         data_upload_page()
     elif page == "📈 KPI Dashboard":
@@ -111,8 +109,7 @@ def main():
         "<div style='text-align:center; color:gray;'>"
         "© 2025 KPI & Chart Generator | Developed by Minal Kulkarni"
         "</div>",
-        unsafe_allow_html=True
-    )
+        unsafe_allow_html=True)
     
 def data_upload_page():
     log_to_google_sheets(
