@@ -12,7 +12,7 @@ from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
 from utils.tracker import log_to_google_sheets
-from help_guide import help_guide_page
+from utils.help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import requests
 from datetime import datetime
