@@ -827,9 +827,10 @@ def help_guide_page():
       page="Help & Guide",
       user_info=str(st.session_state.get("user", "Guest")),
       notes="Viewed Help & Guide")
-   if st.button("🔍 Test Help Page Log"):
-      log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
-      st.success("Test log sent!")
+   
+    if st.button("🔍 Test Help Page Log"):
+       log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
+       st.success("Test log sent!")
        
 if __name__ == "__main__":
     main()
