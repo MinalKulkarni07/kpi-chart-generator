@@ -80,6 +80,24 @@ def main():
                 notes="Session Cleared")
             st.session_state.clear()
             st.rerun()
+    with st.sidebar:
+            st.markdown("---")
+            st.subheader("💬 Feedback")
+            feedback = st.text_area("Share your thoughts:", key="feedback_box")
+
+    if st.button("📩 Submit Feedback"):
+        if feedback.strip():
+            log_to_google_sheets(
+                event="Feedback Submitted",
+                page="Sidebar",
+                user_info=str(st.session_state.get("user", "Guest")),
+                notes=feedback.strip()
+            )
+            st.success("Thank you for your feedback!")
+            st.session_state.feedback_box = ""  # Clear the box after submit
+        else:
+            st.warning("Please write something before submitting.")
+
 
     if page == "📁 Data Upload":
         data_upload_page()
