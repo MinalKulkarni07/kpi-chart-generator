@@ -84,19 +84,26 @@ def main():
             st.markdown("---")
             st.subheader("💬 Feedback")
             feedback = st.text_area("Share your thoughts:", key="feedback_box")
-
-    if st.button("📩 Submit Feedback"):
-        if feedback.strip():
-            log_to_google_sheets(
-                event="Feedback Submitted",
-                page="Sidebar",
-                user_info=str(st.session_state.get("user", "Guest")),
-                notes=feedback.strip()
+            rating = st.radio(
+                "⭐ Rate this app:",
+                ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"],
+                index=4,
+                horizontal=True,
+                key="rating_box"
             )
-            st.success("Thank you for your feedback!")
-            st.session_state.feedback_box = ""  # Clear the box after submit
-        else:
-            st.warning("Please write something before submitting.")
+            if st.button("📩 Submit Feedback"):
+                if feedback.strip():
+                    log_to_google_sheets(
+                        event="Feedback Submitted",
+                        page="Sidebar",
+                        user_info=str(st.session_state.get("user", "Guest")),
+                        notes=f"Rating: {rating} | Feedback: {feedback.strip()}"
+                    )
+                    st.success("Thank you for your feedback!")
+                    st.session_state.feedback_box = ""  # Clear the box after submit
+                    st.session_state.rating_box = "⭐⭐⭐⭐⭐"
+                else:
+                    st.warning("Please write something before submitting.")
 
 
     if page == "📁 Data Upload":
