@@ -8,6 +8,9 @@ def help_guide_page():
         page="Help & Guide",
         user_info=str(st.session_state.get("user", "Guest")),
         notes="Viewed Help & Guide")
+    if st.button("🔍 Test Help Page Log"):
+    log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
+    st.success("Test log sent!")
     st.header("❓ How to Use This App")
     st.markdown("""
     This app helps you analyze your CSV files with KPIs and interactive charts.
@@ -52,8 +55,3 @@ def help_guide_page():
     - Refreshing or disconnecting will remove uploaded files
     - You can use on both desktop and mobile
     """)
-
-    if st.button("🔍 Test Help Page Log"):
-    log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
-    st.success("Test log sent!")
-
