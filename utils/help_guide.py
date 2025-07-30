@@ -1,6 +1,13 @@
 import streamlit as st
+from utils.tracker import log_to_google_sheets
+
 
 def help_guide_page():
+    log_to_google_sheets(
+        event="Page Viewed",
+        page="Help & Guide",
+        user_info=str(st.session_state.get("user", "Guest")),
+        notes="Viewed Help & Guide")
     st.header("❓ How to Use This App")
     st.markdown("""
     This app helps you analyze your CSV files with KPIs and interactive charts.
