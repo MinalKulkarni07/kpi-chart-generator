@@ -1,7 +1,6 @@
 import streamlit as st
 from utils.tracker import log_to_google_sheets  # if saved in a tracker utility file
 
-
 def help_guide_page():
     log_to_google_sheets(
         event="Page Viewed",
