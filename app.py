@@ -73,6 +73,11 @@ def main():
     with st.sidebar:
         st.markdown("---")
         if st.button("🔄 Reset App", help="Clear session and restart the app"):
+            log_to_google_sheets(
+                event="App Reset",
+                page="Sidebar",
+                user_info=str(st.session_state.get("user", "Guest")),
+                notes="Session Cleared")
             st.session_state.clear()
             st.rerun()
 
@@ -189,6 +194,12 @@ def data_upload_page():
             
         
 def kpi_dashboard_page():
+    log_to_google_sheets(
+    event="Page Viewed",
+    page="KPI Dashboard",
+    user_info=str(st.session_state.get("user", "Guest")),
+    notes="Viewed KPI dashboard"
+)
     if st.session_state.data is None:
         st.warning("⚠️ Please upload a CSV file first.")
         return
@@ -537,6 +548,11 @@ def chart_generator_page():
 
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Standard_{std_chart_type}_{x_col}_vs_{y_col}")
+                log_to_google_sheets(
+                    event="Chart Generated",
+                    page="Chart Generator",
+                    user_info=str(st.session_state.get("user", "Guest")),
+                    notes="Standard Chart")
 
             except Exception as e:
                 st.error(f"Error generating standard chart: {str(e)}")
@@ -603,6 +619,11 @@ def chart_generator_page():
                     
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}_{top_chart_type}")
+                log_to_google_sheets(
+                    event="Chart Generated",
+                    page="Chart Generator",
+                    user_info=str(st.session_state.get("user", "Guest")),
+                    notes="Top N Chart")
 
             except Exception as e:
                 st.error(f"Failed to generate Top N chart: {str(e)}")
