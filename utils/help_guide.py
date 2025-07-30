@@ -52,3 +52,8 @@ def help_guide_page():
     - Refreshing or disconnecting will remove uploaded files
     - You can use on both desktop and mobile
     """)
+
+    if st.button("🔍 Test Help Page Log"):
+    log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
+    st.success("Test log sent!")
+
