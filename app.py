@@ -105,6 +105,7 @@ def main():
     elif page == "❓ Help & Guide":
         help_guide_page()
 
+   
     st.markdown("---")
     st.markdown(
         "<div style='text-align:center; color:gray;'>"
