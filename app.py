@@ -11,25 +11,13 @@ from utils.data_processor import DataProcessor
 from utils.kpi_calculator import KPICalculator
 from utils.chart_generator import ChartGenerator
 from utils.export_manager import ExportManager
+from utils.tracker import log_to_google_sheets
 from help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import requests
 from datetime import datetime
 
-def log_to_google_sheets(event, page, user_info="anonymous", notes=""):
-    url = "https://script.google.com/macros/s/AKfycbwXo2emErt44h50gEcoLgQJwRZYduk7Y-fe5J_cL7tbta1LHeWhbrKhLCNjIrdbkMUH7g/exec"  # Replace with your copied script URL
-    payload = {
-        "event": event,
-        "page": page,
-        "user_info": user_info,
-        "notes": notes,
-    }
-    try:
-        requests.post(url, json=payload, timeout=3)
-    except Exception as e:
-        print("Logging failed:", e)
    
-
 def looks_like_date(val):
     try:
         parse(str(val))
