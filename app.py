@@ -119,6 +119,12 @@ def main():
 
     
 def data_upload_page():
+    log_to_google_sheets(
+    event="Page Viewed",
+    page="Data Upload",
+    user_info=str(st.session_state.get("user", "Guest")),
+    notes="Viewed Data Upload"
+)
     st.header("📁 Data Upload & Preview")
     # File uploader
     uploaded_file = st.file_uploader(
@@ -685,6 +691,12 @@ def export_chart(fig, title_base):
 
                     
 def settings_page():
+    log_to_google_sheets(
+    event="Page Viewed",
+    page="Settings",
+    user_info=str(st.session_state.get("user", "Guest")),
+    notes="Viewed Settings"
+)
     st.header("⚙️ Settings")
     
     st.subheader("🎨 Display Options")
@@ -771,6 +783,7 @@ def settings_page():
     - **Plotly** for interactive charts
     - **NumPy** for numerical computations
     """)
+    
     
 if __name__ == "__main__":
     main()
