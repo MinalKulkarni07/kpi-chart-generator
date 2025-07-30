@@ -117,6 +117,13 @@ def main():
     elif page == "❓ Help & Guide":
         help_guide_page()
 
+    st.markdown("---")
+    st.markdown(
+        "<div style='text-align:center; color:gray;'>"
+        "© 2025 KPI & Chart Generator | Developed by Minal Kulkarni"
+        "</div>",
+        unsafe_allow_html=True
+    )
     
 def data_upload_page():
     log_to_google_sheets(
