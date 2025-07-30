@@ -823,10 +823,10 @@ def help_guide_page():
    - You can use on both desktop and mobile
    """)
    log_to_google_sheets(
-      event="Page Viewed",
-      page="Help & Guide",
-      user_info=str(st.session_state.get("user", "Guest")),
-      notes="Viewed Help & Guide")
+   event="Page Viewed",
+   page="Help & Guide",
+   user_info=str(st.session_state.get("user", "Guest")),
+   notes="Viewed Help & Guide")
    
        
 if __name__ == "__main__":
