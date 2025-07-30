@@ -517,6 +517,12 @@ def kpi_dashboard_page():
                 st.error(f"PDF export error: {str(e)}")
 
 def chart_generator_page():
+    log_to_google_sheets(
+    event="Page Viewed",
+    page="Chart Generator",
+    user_info=str(st.session_state.get("user", "Guest")),
+    notes="Viewed Chart Generator"
+)
     if st.session_state.get("data") is None:
         st.warning("⚠️ Please upload a CSV file first.")
         return
