@@ -778,13 +778,6 @@ def settings_page():
     """)
    
 def help_guide_page():
-    log_to_google_sheets(
-        event="Page Viewed",
-        page="Help & Guide",
-        user_info=str(st.session_state.get("user", "Guest")),
-        notes="Viewed Help & Guide")
-    if st.button("🔍 Test Help Page Log"):
-    log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
     st.success("Test log sent!")
     st.header("❓ How to Use This App")
     st.markdown("""
@@ -829,7 +822,14 @@ def help_guide_page():
     - App does not store your data
     - Refreshing or disconnecting will remove uploaded files
     - You can use on both desktop and mobile
-    """)    
+    """)
+   log_to_google_sheets(
+        event="Page Viewed",
+        page="Help & Guide",
+        user_info=str(st.session_state.get("user", "Guest")),
+        notes="Viewed Help & Guide")
+    if st.button("🔍 Test Help Page Log"):
+    log_to_google_sheets("Manual Test", "Help Page", "Tester", "From button")
     
 if __name__ == "__main__":
     main()
