@@ -16,6 +16,7 @@ from utils.help_guide import help_guide_page
 from welcome import show_lottie_welcome
 import requests
 from datetime import datetime
+from utils.tracker import get_user_location
 
    
 def looks_like_date(val):
@@ -47,8 +48,7 @@ def main():
     event="App Opened",
     page="Home",
     user_info=get_user_location(),
-    notes="Landing"
-)
+    notes="Landing")
     show_lottie_welcome()
     st.title("📊 :red[KPI] & :rainbow[Chart] Generator")
     st.markdown("Upload your CSV file and generate interactive dashboards with key performance indicators and visualizations.")
