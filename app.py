@@ -46,7 +46,7 @@ def main():
     log_to_google_sheets(
     event="App Opened",
     page="Home",
-    user_info=str(st.session_state.get("user", "Guest")),
+    user_info=get_user_location(),
     notes="Landing"
 )
     show_lottie_welcome()
@@ -61,10 +61,10 @@ def main():
         st.markdown("---")
         if st.button("🔄 Reset App", help="Clear session and restart the app"):
             log_to_google_sheets(
-                event="App Reset",
-                page="Sidebar",
-                user_info=str(st.session_state.get("user", "Guest")),
-                notes="Session Cleared")
+            event="App Reset",
+            page="Sidebar",
+            user_info=get_user_location(),
+            notes="Session Cleared")
             st.session_state.clear()
             st.rerun()
     with st.sidebar:
@@ -81,11 +81,10 @@ def main():
             if st.button("📩 Submit Feedback"):
                 if feedback.strip():
                     log_to_google_sheets(
-                        event="Feedback Submitted",
-                        page="Sidebar",
-                        user_info=str(st.session_state.get("user", "Guest")),
-                        notes=f"Rating: {rating} | Feedback: {feedback.strip()}"
-                    )
+                    event="Feedback Submitted",
+                    page="Sidebar",
+                    user_info=get_user_location(),
+                    notes=f"Rating: {rating} | Feedback: {feedback.strip()}")
                     st.success("Thank you for your feedback!")
                     st.session_state.feedback_box = ""  # Clear the box after submit
                     st.session_state.rating_box = "⭐⭐⭐⭐⭐"
@@ -115,7 +114,7 @@ def data_upload_page():
     log_to_google_sheets(
     event="Page Viewed",
     page="Data Upload",
-    user_info=str(st.session_state.get("user", "Guest")),
+    user_info=get_user_location(),
     notes="Viewed Data Upload"
 )
     st.header("📁 Data Upload & Preview")
@@ -154,7 +153,7 @@ def data_upload_page():
             log_to_google_sheets(
             event="File Uploaded",
             page="Data Upload",
-            user_info=str(st.session_state.get("user", "Guest")),
+            user_info=get_user_location(),
             notes=uploaded_file.name)
             # Inside the uploaded_file block after reading and parsing
         except Exception as e:
@@ -221,7 +220,7 @@ def kpi_dashboard_page():
     log_to_google_sheets(
     event="Page Viewed",
     page="KPI Dashboard",
-    user_info=str(st.session_state.get("user", "Guest")),
+    user_info=get_user_location(),
     notes="Viewed KPI dashboard"
 )
     if st.session_state.data is None:
@@ -229,6 +228,13 @@ def kpi_dashboard_page():
         return
     
     st.header("📈 KPI Dashboard")
+    st.info("""
+    **What is a KPI?**  
+    KPI stands for **Key Performance Indicator**.  
+    It is a measurable value that shows how effectively a company, team, or individual is achieving key objectives.  
+    In this dashboard, you can calculate totals, averages, growth rates, and more for your data to track performance.
+    """)
+
     
     data = st.session_state.data
     processed_info = st.session_state.processed_data
@@ -519,7 +525,7 @@ def chart_generator_page():
     log_to_google_sheets(
     event="Page Viewed",
     page="Chart Generator",
-    user_info=str(st.session_state.get("user", "Guest")),
+    user_info=get_user_location(),
     notes="Viewed Chart Generator"
 )
     if st.session_state.get("data") is None:
@@ -579,10 +585,10 @@ def chart_generator_page():
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Standard_{std_chart_type}_{x_col}_vs_{y_col}")
                 log_to_google_sheets(
-                    event="Chart Generated",
-                    page="Chart Generator",
-                    user_info=str(st.session_state.get("user", "Guest")),
-                    notes="Standard Chart")
+                event="Chart Generated",
+                page="Chart Generator",
+                user_info=get_user_location(),
+                notes="Standard Chart")
 
             except Exception as e:
                 st.error(f"Error generating standard chart: {str(e)}")
@@ -650,10 +656,10 @@ def chart_generator_page():
                 st.plotly_chart(fig, use_container_width=True)
                 export_chart(fig, f"Top_{top_n}_{cat_col}_by_{val_col}_{top_chart_type}")
                 log_to_google_sheets(
-                    event="Chart Generated",
-                    page="Chart Generator",
-                    user_info=str(st.session_state.get("user", "Guest")),
-                    notes="Top N Chart")
+                event="Chart Generated",
+                page="Chart Generator",
+                user_info=get_user_location(),
+                notes="Top N Chart")
 
             except Exception as e:
                 st.error(f"Failed to generate Top N chart: {str(e)}")
@@ -687,7 +693,7 @@ def settings_page():
     log_to_google_sheets(
     event="Page Viewed",
     page="Settings",
-    user_info=str(st.session_state.get("user", "Guest")),
+    user_info=get_user_location(),
     notes="Viewed Settings"
 )
     st.header("⚙️ Settings")
@@ -825,8 +831,10 @@ def help_guide_page():
    log_to_google_sheets(
    event="Page Viewed",
    page="Help & Guide",
-   user_info=str(st.session_state.get("user", "Guest")),
+   user_info=get_user_location(),
    notes="Viewed Help & Guide")
+   st.caption("🔒 This app collects approximate location for analytics (city/country only). No personal data is stored.")
+
    
        
 if __name__ == "__main__":
